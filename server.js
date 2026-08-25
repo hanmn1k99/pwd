@@ -5,12 +5,20 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const config = require('./config');
 
 const app = express();
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
+
+// Truyền config ra toàn bộ giao diện EJS
+app.use((req, res, next) => {
+    res.locals.config = config;
+    next();
+});
+
 app.use(session({
-    secret: 'my-super-secret-session-key',
+    secret: config.SESSION_SECRET,
     resave: false,
     saveUninitialized: false
 }));
@@ -204,7 +212,7 @@ app.post('/delete_password/:id', requireLogin, (req, res) => {
     });
 });
 
-const PORT = process.env.PORT || 3333;
+const PORT = process.env.PORT || config.PORT;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
