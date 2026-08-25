@@ -33,7 +33,7 @@
                 <% if (user.is_admin) { %><span class="badge bg-danger ms-1">Admin</span><% } %>
             </span>
             <button class="btn btn-outline-info btn-sm me-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#changePwModal">
-                <ion-icon name="key"></ion-icon> Đổi MK
+                <ion-icon name="key"></ion-icon> Đổi Mật Khẩu
             </button>
             <a href="/logout" class="btn btn-outline-light btn-sm fw-semibold">
                 <ion-icon name="log-out"></ion-icon> Thoát
@@ -59,7 +59,7 @@
         <% if (user.is_admin) { %>
         <div>
             <button class="btn btn-primary shadow-sm fw-semibold" data-bs-toggle="modal" data-bs-target="#addPasswordModal">
-                <ion-icon name="add-circle"></ion-icon> Thêm MK
+                <ion-icon name="add-circle"></ion-icon> Thêm Tài Khoản
             </button>
             <button class="btn btn-success shadow-sm ms-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#addUserModal">
                 <ion-icon name="people"></ion-icon> Quản lý User
@@ -159,7 +159,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content rounded-4 border-0 shadow-lg">
       <div class="modal-header border-bottom-0">
-        <h5 class="modal-title fw-bold text-<%= config.THEME_COLOR %>"><ion-icon name="add-circle"></ion-icon> Thêm Mật Khẩu Mới</h5>
+        <h5 class="modal-title fw-bold text-<%= config.THEME_COLOR %>"><ion-icon name="add-circle"></ion-icon> Thêm Tài Khoản Lưu Trữ</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form action="/add_password" method="POST">
