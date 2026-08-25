@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Nội Bộ</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f4f4f9; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input, button, select { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+        button { background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .flash { background: #d4edda; color: #155724; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
+        .password-card { border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 6px; background: #fafafa; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .btn-sm { width: auto; padding: 5px 10px; font-size: 13px; margin: 0; }
+        .badge { background: #6c757d; color: white; padding: 3px 6px; border-radius: 3px; font-size: 12px; margin-right: 3px;}
+        hr { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
+        h2, h3, h4 { color: #333; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <% if (msg === 'added') { %> <div class="flash">Đã thêm mật khẩu!</div> <% } %>
+        <% if (msg === 'useradded') { %> <div class="flash">Đã tạo User!</div> <% } %>
+        <% if (msg === 'userexists') { %> <div class="flash" style="background:#f8d7da;color:#721c24;">Tên User đã tồn tại!</div> <% } %>
+
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="margin:0">Xin chào, <%= user.username %> <% if (user.is_admin) { %><span style="color:red; font-size: 16px;">(Admin)</span><% } %></h2>
+            <a href="/logout"><button class="btn-sm" style="background: #dc3545;">Đăng xuất</button></a>
+        </div>
+        <hr>
+
+        <h3>Danh sách Mật khẩu của bạn</h3>
+        <% if (passwords.length > 0) { %>
+            <% passwords.forEach(p => { %>
+            <div class="password-card">
+                <strong style="font-size: 18px;"><%= p.title %></strong>
+                <% if (p.url) { %><a href="<%= p.url %>" target="_blank" style="text-decoration: none;">🔗 Link</a><% } %><br><br>
+                Tài khoản: <strong><%= p.acc_username %></strong><br>
+                Mật khẩu: <span id="pw-<%= p.id %>" style="font-family: monospace; font-size: 16px; background: #e9ecef; padding: 2px 6px; border-radius: 3px;">••••••••</span>
+                <button class="btn-sm" onclick="togglePassword('<%= p.id %>', '<%= p.decrypted.replace(/'/g, "\\'") %>')">👁️ Hiện/Ẩn</button><br>
+                <% if (p.notes) { %><i style="color: #666; display: block; margin-top: 5px;">Ghi chú: <%= p.notes %></i><% } %>
+                
+                <% if (user.is_admin && p.shared_with) { %>
+                <div style="margin-top: 10px; font-size: 12px; color: #555;">
+                    Được chia sẻ cho: 
+                    <% p.shared_with.forEach(u => { %> <span class="badge"><%= u %></span> <% }) %>
+                </div>
+                <% } %>
+            </div>
+            <% }) %>
+        <% } else { %>
+            <div style="background: #e9ecef; padding: 20px; text-align: center; color: #666; border-radius: 5px;">Chưa có mật khẩu nào được chia sẻ với bạn.</div>
+        <% } %>
+
+        <% if (user.is_admin) { %>
+        <hr>
+        <div class="grid-2">
+            <div style="background: #eef2f5; padding: 15px; border-radius: 6px;">
+                <h3>🔑 Thêm Mật khẩu mới</h3>
+                <form action="/add_password" method="POST">
+                    <input type="text" name="title" placeholder="Tên hệ thống (VD: Facebook Công ty)" required>
+                    <input type="text" name="acc_username" placeholder="Tài khoản đăng nhập">
+                    <input type="text" name="password" placeholder="Mật khẩu" required>
+                    <input type="text" name="url" placeholder="Đường dẫn URL (Tùy chọn)">
+                    <input type="text" name="notes" placeholder="Ghi chú (Tùy chọn)">
+                    
+                    <label style="display: block; margin-top: 10px; font-size: 14px;"><strong>Cấp quyền cho User:</strong> (Giữ Ctrl để chọn nhiều)</label>
+                    <select name="allowed_users" multiple style="height: 80px; margin-top: 5px;">
+                        <% allUsers.forEach(u => { %>
+                            <% if (u.id !== user.id) { %>
+                            <option value="<%= u.id %>"><%= u.username %></option>
+                            <% } %>
+                        <% }) %>
+                    </select>
+                    <button type="submit" style="margin-top: 10px;">Lưu & Phân quyền</button>
+                </form>
+            </div>
+            
+            <div style="background: #eef2f5; padding: 15px; border-radius: 6px;">
+                <h3>👤 Quản lý User</h3>
+                <form action="/add_user" method="POST" style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #ddd;">
+                    <input type="text" name="username" placeholder="Tên đăng nhập mới" required>
+                    <input type="text" name="password" placeholder="Mật khẩu cho user" required>
+                    <label style="display: block; margin: 10px 0;"><input type="checkbox" name="is_admin" style="width: auto; margin-right: 5px;"> Cấp quyền Admin?</label>
+                    <button type="submit" style="background: #28a745;">Tạo User</button>
+                </form>
+                
+                <h4>Danh sách User hiện tại:</h4>
+                <ul style="margin: 0; padding-left: 20px;">
+                <% allUsers.forEach(u => { %>
+                    <li style="margin-bottom: 5px;"><strong><%= u.username %></strong> <% if (u.is_admin) { %><span style="color:red; font-size: 12px;">(Admin)</span><% } %></li>
+                <% }) %>
+                </ul>
+            </div>
+        </div>
+        <% } %>
+    </div>
+    <script>
+        function togglePassword(id, password) {
+            let el = document.getElementById('pw-' + id);
+            if (el.innerText === '••••••••') {
+                el.innerText = password;
+            } else {
+                el.innerText = '••••••••';
+            }
+        }
+    </script>
+</body>
+</html>
