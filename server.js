@@ -182,6 +182,28 @@ app.post('/add_user', requireLogin, (req, res) => {
     });
 });
 
+app.post('/change_my_password', requireLogin, (req, res) => {
+    const { old_password, new_password } = req.body;
+    db.get("SELECT * FROM users WHERE id = ?", [req.session.user.id], (err, user) => {
+        if (user && bcrypt.compareSync(old_password, user.password_hash)) {
+            const hash = bcrypt.hashSync(new_password, 8);
+            db.run("UPDATE users SET password_hash = ? WHERE id = ?", [hash, user.id], (err) => {
+                res.redirect('/?msg=pwchanged');
+            });
+        } else {
+            res.redirect('/?msg=pwchange_err');
+        }
+    });
+});
+
+app.post('/delete_password/:id', requireLogin, (req, res) => {
+    if (!req.session.user.is_admin) return res.status(403).send("Forbidden");
+    db.run("DELETE FROM passwords WHERE id = ?", [req.params.id], (err) => {
+        db.run("DELETE FROM access WHERE password_id = ?", [req.params.id]);
+        res.redirect('/?msg=deleted');
+    });
+});
+
 const PORT = process.env.PORT || 3333;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

@@ -24,6 +24,7 @@
                 Xin chào, <strong><%= user.username %></strong> 
                 <% if (user.is_admin) { %><span class="badge bg-danger ms-1">Admin</span><% } %>
             </span>
+            <button class="btn btn-outline-info btn-sm me-2" data-bs-toggle="modal" data-bs-target="#changePwModal"><i class="bi bi-key"></i> Đổi mật khẩu</button>
             <a href="/logout" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right"></i> Đăng xuất</a>
         </div>
     </div>
@@ -34,6 +35,9 @@
     <% if (msg === 'added') { %> <div class="alert alert-success alert-dismissible fade show shadow-sm"><i class="bi bi-check-circle-fill"></i> Đã thêm mật khẩu thành công! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
     <% if (msg === 'useradded') { %> <div class="alert alert-success alert-dismissible fade show shadow-sm"><i class="bi bi-person-check-fill"></i> Đã tạo người dùng mới! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
     <% if (msg === 'userexists') { %> <div class="alert alert-danger alert-dismissible fade show shadow-sm"><i class="bi bi-exclamation-triangle-fill"></i> Tên người dùng đã tồn tại! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
+    <% if (msg === 'pwchanged') { %> <div class="alert alert-success alert-dismissible fade show shadow-sm"><i class="bi bi-check-circle-fill"></i> Đổi mật khẩu đăng nhập thành công! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
+    <% if (msg === 'pwchange_err') { %> <div class="alert alert-danger alert-dismissible fade show shadow-sm"><i class="bi bi-x-circle-fill"></i> Mật khẩu cũ không chính xác! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
+    <% if (msg === 'deleted') { %> <div class="alert alert-warning alert-dismissible fade show shadow-sm"><i class="bi bi-trash-fill"></i> Đã xóa mật khẩu! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
 
     <!-- Header & Actions -->
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -55,7 +59,14 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <h5 class="card-title text-primary fw-bold mb-0"><%= p.title %></h5>
-                            <% if (p.url) { %><a href="<%= p.url %>" target="_blank" class="btn btn-sm btn-light border"><i class="bi bi-box-arrow-up-right"></i></a><% } %>
+                            <div>
+                                <% if (p.url) { %><a href="<%= p.url %>" target="_blank" class="btn btn-sm btn-light border"><i class="bi bi-box-arrow-up-right"></i></a><% } %>
+                                <% if (user.is_admin) { %>
+                                    <form action="/delete_password/<%= p.id %>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa mật khẩu này không?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                <% } %>
+                            </div>
                         </div>
                         <div class="mb-2">
                             <small class="text-muted d-block text-uppercase" style="font-size: 0.75em; letter-spacing: 0.5px;">Tài khoản</small>
@@ -95,6 +106,31 @@
             </div>
         <% } %>
     </div>
+</div>
+
+<!-- Change Password Modal (For all users) -->
+<div class="modal fade" id="changePwModal" tabindex="-1">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow">
+      <div class="modal-header border-bottom-0">
+        <h6 class="modal-title fw-bold"><i class="bi bi-key-fill text-info"></i> Đổi Mật Khẩu Đăng Nhập</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form action="/change_my_password" method="POST">
+          <div class="modal-body py-0">
+              <div class="mb-3">
+                  <input type="password" name="old_password" class="form-control" placeholder="Mật khẩu hiện tại" required>
+              </div>
+              <div class="mb-3">
+                  <input type="password" name="new_password" class="form-control" placeholder="Mật khẩu mới" required>
+              </div>
+          </div>
+          <div class="modal-footer border-top-0 pt-0">
+            <button type="submit" class="btn btn-info w-100 text-white fw-bold">Xác nhận đổi</button>
+          </div>
+      </form>
+    </div>
+  </div>
 </div>
 
 <% if (user.is_admin) { %>
