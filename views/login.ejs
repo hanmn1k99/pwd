@@ -9,7 +9,18 @@
         body { background-color: var(--bs-body-bg); transition: background-color 0.3s; }
         .login-container { max-width: 400px; margin-top: 15vh; }
         ion-icon { pointer-events: none; vertical-align: text-bottom; margin-right: 4px; font-size: 1.15em; }
-        .theme-btn { font-size: 1.5rem !important; margin: 0; }
+        .fade-out { transition: opacity 0.5s ease, transform 0.5s ease; opacity: 0; transform: translateY(-20px); }
+        
+        /* Chế độ Dark Mode Terminal */
+        [data-bs-theme="dark"] body { background-color: #000000; color: #e0e0e0; }
+        [data-bs-theme="dark"] .card { background-color: #000000; border: 1px solid #333333; box-shadow: none !important; }
+        [data-bs-theme="dark"] .bg-body-tertiary { background-color: #080808 !important; border: 1px solid #333; color: #00ff00 !important; }
+        
+        [data-bs-theme="dark"] .text-primary { color: #00ffff !important; }
+        [data-bs-theme="dark"] .btn-outline-primary { color: #00ffff; border-color: #00ffff; }
+        [data-bs-theme="dark"] .btn-outline-primary:hover { background-color: #00ffff; color: #000; }
+        
+        [data-bs-theme="dark"] .text-secondary, [data-bs-theme="dark"] .text-muted { color: #00ffff !important; opacity: 0.7; }
     </style>
 </head>
 <body>
