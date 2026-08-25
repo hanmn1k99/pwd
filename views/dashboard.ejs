@@ -17,38 +17,38 @@
         
         .fade-out { transition: opacity 0.5s ease, transform 0.5s ease; opacity: 0; transform: translateY(-20px); }
         
-        /* Cải thiện hiển thị Chế độ Dark Mode theo phong cách Terminal (PM2) */
-        [data-bs-theme="dark"] body { background-color: #000000; color: #e0e0e0; }
+        /* Chế độ Dark Mode lấy cảm hứng từ Autobell */
+        [data-bs-theme="dark"] body { background-color: #0b0f1a; color: #e2e8f0; }
         [data-bs-theme="dark"] .card { 
-            background-color: #000000; 
-            border: 1px solid #333333; 
+            background-color: rgba(255,255,255,0.04); 
+            border: 1px solid rgba(255,255,255,0.08); 
             box-shadow: none !important;
         }
         [data-bs-theme="dark"] .card:hover { 
-            border-color: #00ffff; 
-            box-shadow: 0 0 15px rgba(0,255,255,0.15) !important; 
+            border-color: rgba(59,130,246,0.5); 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important; 
             transform: translateY(-2px);
         }
-        [data-bs-theme="dark"] .bg-body-tertiary { background-color: #080808 !important; }
-        [data-bs-theme="dark"] .navbar { background-color: #000000 !important; border-bottom: 1px solid #333; }
-        [data-bs-theme="dark"] .modal-content { background-color: #000000; border: 1px solid #00ffff; }
+        [data-bs-theme="dark"] .bg-body-tertiary { background-color: rgba(255,255,255,0.02) !important; }
+        [data-bs-theme="dark"] .navbar { background-color: #0f1629 !important; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        [data-bs-theme="dark"] .modal-content { background-color: #0f1629; border: 1px solid rgba(255,255,255,0.08); }
         
-        /* Ghi đè màu chữ và nút theo tông Cyan / Green / Red chuẩn terminal */
-        [data-bs-theme="dark"] .text-primary, [data-bs-theme="dark"] .text-info { color: #00ffff !important; }
-        [data-bs-theme="dark"] .btn-outline-primary, [data-bs-theme="dark"] .btn-outline-info { color: #00ffff; border-color: #00ffff; }
-        [data-bs-theme="dark"] .btn-outline-primary:hover, [data-bs-theme="dark"] .btn-outline-info:hover { background-color: #00ffff; color: #000; }
+        [data-bs-theme="dark"] .text-primary, [data-bs-theme="dark"] .text-info { color: #3b82f6 !important; }
+        [data-bs-theme="dark"] .btn-outline-primary, [data-bs-theme="dark"] .btn-outline-info { color: #3b82f6; border-color: #3b82f6; }
+        [data-bs-theme="dark"] .btn-outline-primary:hover, [data-bs-theme="dark"] .btn-outline-info:hover { background-color: #3b82f6; color: #fff; }
         
-        [data-bs-theme="dark"] .text-success { color: #00ff00 !important; }
-        [data-bs-theme="dark"] .btn-outline-success { color: #00ff00; border-color: #00ff00; }
-        [data-bs-theme="dark"] .btn-outline-success:hover { background-color: #00ff00; color: #000; }
+        [data-bs-theme="dark"] .text-success { color: #10b981 !important; }
+        [data-bs-theme="dark"] .btn-outline-success { color: #10b981; border-color: #10b981; }
+        [data-bs-theme="dark"] .btn-outline-success:hover { background-color: #10b981; color: #fff; }
         
-        [data-bs-theme="dark"] .text-danger { color: #ff3333 !important; }
-        [data-bs-theme="dark"] .btn-outline-danger { color: #ff3333; border-color: #ff3333; }
-        [data-bs-theme="dark"] .btn-outline-danger:hover { background-color: #ff3333; color: #fff; }
+        [data-bs-theme="dark"] .text-danger { color: #ef4444 !important; }
+        [data-bs-theme="dark"] .btn-outline-danger { color: #ef4444; border-color: #ef4444; }
+        [data-bs-theme="dark"] .btn-outline-danger:hover { background-color: #ef4444; color: #fff; }
         
-        [data-bs-theme="dark"] .text-secondary { color: #00ffff !important; opacity: 0.8; }
-        [data-bs-theme="dark"] .border-secondary-subtle { border-color: #333 !important; }
-        [data-bs-theme="dark"] .font-monospace { color: #00ff00 !important; }
+        [data-bs-theme="dark"] .text-secondary { color: #64748b !important; }
+        [data-bs-theme="dark"] .text-muted { color: #64748b !important; }
+        [data-bs-theme="dark"] .border-secondary-subtle { border-color: rgba(255,255,255,0.08) !important; }
+        [data-bs-theme="dark"] .font-monospace { color: #3b82f6 !important; }
     </style>
 </head>
 <body>
