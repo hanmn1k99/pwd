@@ -5,61 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Đăng nhập - <%= config.SITE_NAME %></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
         body { background-color: var(--bs-body-bg); transition: background-color 0.3s; }
         .login-container { max-width: 400px; margin-top: 15vh; }
+        ion-icon { pointer-events: none; vertical-align: text-bottom; margin-right: 4px; font-size: 1.15em; }
+        .theme-btn { font-size: 1.5rem !important; margin: 0; }
     </style>
 </head>
 <body>
-    <!-- Nút Dark/Light Mode -->
-    <button id="themeToggle" class="btn btn-outline-secondary position-absolute top-0 end-0 m-3 rounded-circle shadow-sm">
-        <i id="themeIcon" class="bi bi-moon-fill"></i>
+    <button id="themeToggle" class="btn btn-outline-secondary position-absolute top-0 end-0 m-3 rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width:45px; height:45px;">
+        <ion-icon id="themeIcon" name="moon" class="theme-btn"></ion-icon>
     </button>
 
     <div class="container login-container">
-        <div class="card shadow border-0 rounded-3">
+        <div class="card shadow-lg border-0 rounded-4">
             <div class="card-body p-4 p-md-5">
                 <div class="text-center mb-4">
-                    <h3 class="fw-bold text-<%= config.THEME_COLOR %>"><%= config.SITE_NAME %></h3>
-                    <p class="text-muted">Đăng nhập hệ thống nội bộ</p>
+                    <h3 class="fw-bold text-<%= config.THEME_COLOR %>">
+                        <ion-icon name="shield-checkmark" style="font-size: 1.8em; display:block; margin: 0 auto 10px;"></ion-icon>
+                        <%= config.SITE_NAME %>
+                    </h3>
+                    <p class="text-muted">Hệ thống quản lý nội bộ</p>
                 </div>
                 <% if (error) { %>
-                    <div class="alert alert-danger" role="alert"><%= error %></div>
+                    <div class="alert alert-danger py-2" role="alert"><ion-icon name="warning"></ion-icon> <%= error %></div>
                 <% } %>
                 <form method="POST">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Tài khoản</label>
-                        <input type="text" name="username" class="form-control form-control-lg" required autofocus>
+                        <label class="form-label fw-semibold text-secondary"><ion-icon name="person"></ion-icon> Tài khoản</label>
+                        <input type="text" name="username" class="form-control form-control-lg bg-body-tertiary" required autofocus>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Mật khẩu</label>
-                        <input type="password" name="password" class="form-control form-control-lg" required>
+                        <label class="form-label fw-semibold text-secondary"><ion-icon name="lock-closed"></ion-icon> Mật khẩu</label>
+                        <input type="password" name="password" class="form-control form-control-lg bg-body-tertiary" required>
                     </div>
-                    <div class="form-check mb-4">
+                    <div class="form-check mb-4 mt-3">
                         <input class="form-check-input" type="checkbox" name="remember" id="rememberCheck">
                         <label class="form-check-label text-muted" for="rememberCheck">Ghi nhớ đăng nhập (30 ngày)</label>
                     </div>
-                    <button type="submit" class="btn btn-<%= config.THEME_COLOR %> btn-lg w-100 fw-bold">Đăng nhập</button>
+                    <button type="submit" class="btn btn-<%= config.THEME_COLOR %> btn-lg w-100 fw-bold shadow-sm"><ion-icon name="log-in"></ion-icon> Đăng nhập</button>
                 </form>
             </div>
         </div>
     </div>
     
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <script>
         const htmlEl = document.documentElement;
         const themeBtn = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
         const savedTheme = localStorage.getItem('theme') || 'light';
         htmlEl.setAttribute('data-bs-theme', savedTheme);
-        themeIcon.className = savedTheme === 'dark' ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-fill';
+        themeIcon.setAttribute('name', savedTheme === 'dark' ? 'sunny' : 'moon');
+        if(savedTheme === 'dark') themeIcon.style.color = '#ffc107';
 
         themeBtn.addEventListener('click', () => {
             const current = htmlEl.getAttribute('data-bs-theme');
             const next = current === 'dark' ? 'light' : 'dark';
             htmlEl.setAttribute('data-bs-theme', next);
             localStorage.setItem('theme', next);
-            themeIcon.className = next === 'dark' ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-fill';
+            themeIcon.setAttribute('name', next === 'dark' ? 'sunny' : 'moon');
+            themeIcon.style.color = next === 'dark' ? '#ffc107' : '';
         });
     </script>
 </body>

@@ -220,6 +220,16 @@ app.post('/delete_password/:id', requireLogin, (req, res) => {
     });
 });
 
+app.post('/delete_user/:id', requireLogin, (req, res) => {
+    if (!req.session.user.is_admin) return res.status(403).send("Forbidden");
+    if (req.params.id == req.session.user.id) return res.redirect('/?msg=cant_delete_self');
+    
+    db.run("DELETE FROM users WHERE id = ?", [req.params.id], (err) => {
+        db.run("DELETE FROM access WHERE user_id = ?", [req.params.id]);
+        res.redirect('/?msg=user_deleted');
+    });
+});
+
 const PORT = process.env.PORT || config.PORT;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

@@ -5,93 +5,110 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dashboard - <%= config.SITE_NAME %></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
         body { background-color: var(--bs-body-bg); transition: background-color 0.3s; }
-        .password-text { font-family: monospace; font-size: 1.1em; background: var(--bs-tertiary-bg); padding: 2px 8px; border-radius: 4px; letter-spacing: 1px; }
-        .card { transition: transform 0.2s; }
-        .card:hover { transform: translateY(-3px); }
+        .password-text { font-family: monospace; font-size: 1.15em; background: var(--bs-tertiary-bg); padding: 4px 10px; border-radius: 4px; letter-spacing: 1px; }
+        .card { transition: all 0.2s ease-in-out; border: 1px solid var(--bs-border-color-translucent); }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; }
+        ion-icon { pointer-events: none; vertical-align: text-bottom; margin-right: 4px; font-size: 1.15em; }
+        .btn ion-icon { margin-right: 2px; }
+        .icon-only { margin-right: 0 !important; }
     </style>
 </head>
 <body>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="#"><i class="bi bi-shield-lock-fill text-<%= config.THEME_COLOR %>"></i> <%= config.SITE_NAME %></a>
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
+            <ion-icon name="shield-checkmark" class="text-<%= config.THEME_COLOR %> me-2" style="font-size: 1.4em;"></ion-icon> 
+            <%= config.SITE_NAME %>
+        </a>
         <div class="d-flex align-items-center">
-            <button id="themeToggle" class="btn btn-outline-light btn-sm me-3 border-0" title="Chuyển chế độ Sáng/Tối">
-                <i id="themeIcon" class="bi bi-moon-fill"></i>
+            <button id="themeToggle" class="btn btn-outline-light btn-sm me-3 border-0 rounded-circle" title="Chuyển chế độ Sáng/Tối">
+                <ion-icon id="themeIcon" name="moon" class="icon-only"></ion-icon>
             </button>
-            <span class="text-light me-3 d-none d-sm-inline">
+            <span class="text-light me-3 d-none d-md-inline">
                 Xin chào, <strong><%= user.username %></strong> 
                 <% if (user.is_admin) { %><span class="badge bg-danger ms-1">Admin</span><% } %>
             </span>
-            <button class="btn btn-outline-info btn-sm me-2" data-bs-toggle="modal" data-bs-target="#changePwModal"><i class="bi bi-key"></i> Đổi MK</button>
-            <a href="/logout" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right"></i> Thoát</a>
+            <button class="btn btn-outline-info btn-sm me-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#changePwModal">
+                <ion-icon name="key"></ion-icon> Đổi MK
+            </button>
+            <a href="/logout" class="btn btn-outline-light btn-sm fw-semibold">
+                <ion-icon name="log-out"></ion-icon> Thoát
+            </a>
         </div>
     </div>
 </nav>
 
 <div class="container">
     <!-- Messages -->
-    <% if (msg === 'added') { %> <div class="alert alert-success alert-dismissible fade show shadow-sm"><i class="bi bi-check-circle-fill"></i> Đã thêm mật khẩu thành công! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
-    <% if (msg === 'useradded') { %> <div class="alert alert-success alert-dismissible fade show shadow-sm"><i class="bi bi-person-check-fill"></i> Đã tạo người dùng mới! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
-    <% if (msg === 'userexists') { %> <div class="alert alert-danger alert-dismissible fade show shadow-sm"><i class="bi bi-exclamation-triangle-fill"></i> Tên người dùng đã tồn tại! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
-    <% if (msg === 'pwchanged') { %> <div class="alert alert-success alert-dismissible fade show shadow-sm"><i class="bi bi-check-circle-fill"></i> Đổi mật khẩu đăng nhập thành công! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
-    <% if (msg === 'pwchange_err') { %> <div class="alert alert-danger alert-dismissible fade show shadow-sm"><i class="bi bi-x-circle-fill"></i> Mật khẩu cũ không chính xác! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
-    <% if (msg === 'deleted') { %> <div class="alert alert-warning alert-dismissible fade show shadow-sm"><i class="bi bi-trash-fill"></i> Đã xóa mật khẩu! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
+    <% if (msg === 'added') { %> <div class="alert alert-success alert-dismissible fade show shadow-sm"><ion-icon name="checkmark-circle"></ion-icon> Đã thêm mật khẩu thành công! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
+    <% if (msg === 'useradded') { %> <div class="alert alert-success alert-dismissible fade show shadow-sm"><ion-icon name="person-add"></ion-icon> Đã tạo người dùng mới! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
+    <% if (msg === 'userexists') { %> <div class="alert alert-danger alert-dismissible fade show shadow-sm"><ion-icon name="warning"></ion-icon> Tên người dùng đã tồn tại! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
+    <% if (msg === 'pwchanged') { %> <div class="alert alert-success alert-dismissible fade show shadow-sm"><ion-icon name="checkmark-circle"></ion-icon> Đổi mật khẩu đăng nhập thành công! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
+    <% if (msg === 'pwchange_err') { %> <div class="alert alert-danger alert-dismissible fade show shadow-sm"><ion-icon name="close-circle"></ion-icon> Mật khẩu cũ không chính xác! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
+    <% if (msg === 'deleted') { %> <div class="alert alert-warning alert-dismissible fade show shadow-sm"><ion-icon name="trash"></ion-icon> Đã xóa mật khẩu! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
+    <% if (msg === 'user_deleted') { %> <div class="alert alert-warning alert-dismissible fade show shadow-sm"><ion-icon name="trash"></ion-icon> Đã xóa người dùng! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
+    <% if (msg === 'cant_delete_self') { %> <div class="alert alert-danger alert-dismissible fade show shadow-sm"><ion-icon name="warning"></ion-icon> Bạn không thể tự xóa chính mình! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
 
     <!-- Header & Actions -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <h4 class="mb-0 text-secondary fw-bold"><i class="bi bi-key-fill"></i> Danh sách của bạn</h4>
+        <h4 class="mb-0 text-secondary fw-bold d-flex align-items-center"><ion-icon name="key" class="me-2"></ion-icon> Danh sách của bạn</h4>
         <% if (user.is_admin) { %>
         <div>
-            <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addPasswordModal"><i class="bi bi-plus-circle"></i> Thêm MK</button>
-            <button class="btn btn-success shadow-sm ms-2" data-bs-toggle="modal" data-bs-target="#addUserModal"><i class="bi bi-people-fill"></i> Quản lý User</button>
+            <button class="btn btn-primary shadow-sm fw-semibold" data-bs-toggle="modal" data-bs-target="#addPasswordModal">
+                <ion-icon name="add-circle"></ion-icon> Thêm MK
+            </button>
+            <button class="btn btn-success shadow-sm ms-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                <ion-icon name="people"></ion-icon> Quản lý User
+            </button>
         </div>
         <% } %>
     </div>
 
     <!-- Passwords Grid -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mb-5">
         <% if (passwords.length > 0) { %>
             <% passwords.forEach(p => { %>
             <div class="col">
-                <div class="card h-100 shadow-sm border-0 rounded-4">
-                    <div class="card-body">
+                <div class="card h-100 shadow-sm rounded-4">
+                    <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <h5 class="card-title text-<%= config.THEME_COLOR %> fw-bold mb-0"><%= p.title %></h5>
                             <div>
-                                <% if (p.url) { %><a href="<%= p.url %>" target="_blank" class="btn btn-sm btn-outline-secondary border-0"><i class="bi bi-box-arrow-up-right"></i></a><% } %>
+                                <% if (p.url) { %><a href="<%= p.url %>" target="_blank" class="btn btn-sm btn-outline-secondary border-0" title="Mở đường dẫn"><ion-icon name="open" class="icon-only"></ion-icon></a><% } %>
                                 <% if (user.is_admin) { %>
                                     <form action="/delete_password/<%= p.id %>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa mật khẩu này không?');">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger border-0"><i class="bi bi-trash"></i></button>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger border-0" title="Xóa"><ion-icon name="trash" class="icon-only"></ion-icon></button>
                                     </form>
                                 <% } %>
                             </div>
                         </div>
-                        <div class="mb-2">
-                            <small class="text-muted d-block text-uppercase" style="font-size: 0.75em; letter-spacing: 0.5px;">Tài khoản</small>
-                            <strong class="text-body"><%= p.acc_username %></strong>
+                        <div class="mb-3 bg-body-tertiary p-2 rounded">
+                            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.70em; letter-spacing: 1px;"><ion-icon name="person"></ion-icon> Tài khoản</small>
+                            <strong class="text-body fs-6"><%= p.acc_username %></strong>
                         </div>
                         <div class="mb-3">
-                            <small class="text-muted d-block text-uppercase" style="font-size: 0.75em; letter-spacing: 0.5px;">Mật khẩu</small>
-                            <div class="input-group input-group-sm mt-1">
-                                <span class="input-group-text password-text border-end-0" id="pw-<%= p.id %>">••••••••</span>
-                                <button class="btn btn-outline-secondary border-start-0" type="button" onclick="togglePassword('<%= p.id %>', '<%= p.decrypted.replace(/'/g, "\\'") %>')"><i class="bi bi-eye"></i></button>
+                            <small class="text-muted d-block text-uppercase fw-bold mb-1" style="font-size: 0.70em; letter-spacing: 1px;"><ion-icon name="lock-closed"></ion-icon> Mật khẩu</small>
+                            <div class="input-group">
+                                <span class="input-group-text password-text border-end-0 flex-grow-1" id="pw-<%= p.id %>">••••••••</span>
+                                <button class="btn btn-outline-secondary border-start-0" type="button" onclick="togglePassword('<%= p.id %>', '<%= p.decrypted.replace(/'/g, "\\'") %>')">
+                                    <ion-icon name="eye" class="icon-only" id="icon-<%= p.id %>"></ion-icon>
+                                </button>
                             </div>
                         </div>
                         <% if (p.notes) { %>
-                        <div class="mb-3">
-                            <small class="text-muted d-block text-uppercase" style="font-size: 0.75em; letter-spacing: 0.5px;">Ghi chú</small>
+                        <div class="mt-3 border-top pt-2">
+                            <small class="text-muted d-block text-uppercase fw-bold mb-1" style="font-size: 0.70em; letter-spacing: 1px;"><ion-icon name="document-text"></ion-icon> Ghi chú</small>
                             <span class="text-secondary" style="font-size: 0.9em;"><%= p.notes %></span>
                         </div>
                         <% } %>
                     </div>
                     <% if (user.is_admin && p.shared_with) { %>
-                    <div class="card-footer bg-body-tertiary border-top pt-2 pb-2 rounded-bottom-4">
-                        <small class="text-muted d-block mb-1" style="font-size: 0.8em;"><i class="bi bi-share-fill"></i> Chia sẻ với:</small>
+                    <div class="card-footer bg-body-tertiary border-top pt-3 pb-3 rounded-bottom-4">
+                        <small class="text-muted d-block mb-2 fw-semibold" style="font-size: 0.8em;"><ion-icon name="share-social"></ion-icon> Đã chia sẻ với:</small>
                         <div class="d-flex flex-wrap gap-1">
                         <% p.shared_with.forEach(u => { %> <span class="badge bg-secondary fw-normal"><%= u %></span> <% }) %>
                         </div>
@@ -102,8 +119,8 @@
             <% }) %>
         <% } else { %>
             <div class="col-12">
-                <div class="text-center p-5 bg-body rounded-4 shadow-sm text-muted">
-                    <i class="bi bi-inbox fs-1"></i>
+                <div class="text-center p-5 bg-body rounded-4 shadow-sm text-muted border">
+                    <ion-icon name="cube" style="font-size: 4em; color: #ccc;"></ion-icon>
                     <p class="mt-3 fs-5">Chưa có mật khẩu nào được chia sẻ với bạn.</p>
                 </div>
             </div>
@@ -114,22 +131,22 @@
 <!-- Change Password Modal (For all users) -->
 <div class="modal fade" id="changePwModal" tabindex="-1">
   <div class="modal-dialog modal-sm modal-dialog-centered">
-    <div class="modal-content rounded-4 border-0 shadow">
-      <div class="modal-header border-bottom-0">
-        <h6 class="modal-title fw-bold"><i class="bi bi-key-fill text-info"></i> Đổi Mật Khẩu Đăng Nhập</h6>
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <div class="modal-header border-bottom-0 pb-0">
+        <h6 class="modal-title fw-bold text-info"><ion-icon name="key"></ion-icon> Đổi Mật Khẩu</h6>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form action="/change_my_password" method="POST">
-          <div class="modal-body py-0">
+          <div class="modal-body">
               <div class="mb-3">
-                  <input type="password" name="old_password" class="form-control" placeholder="Mật khẩu hiện tại" required>
+                  <input type="password" name="old_password" class="form-control bg-body-tertiary" placeholder="Mật khẩu hiện tại" required>
               </div>
-              <div class="mb-3">
-                  <input type="password" name="new_password" class="form-control" placeholder="Mật khẩu mới" required>
+              <div class="mb-1">
+                  <input type="password" name="new_password" class="form-control bg-body-tertiary" placeholder="Mật khẩu mới" required>
               </div>
           </div>
           <div class="modal-footer border-top-0 pt-0">
-            <button type="submit" class="btn btn-info w-100 text-white fw-bold">Xác nhận đổi</button>
+            <button type="submit" class="btn btn-info w-100 text-white fw-bold shadow-sm">Xác nhận đổi</button>
           </div>
       </form>
     </div>
@@ -140,38 +157,38 @@
 <!-- Add Password Modal -->
 <div class="modal fade" id="addPasswordModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded-4 border-0 shadow">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
       <div class="modal-header border-bottom-0">
-        <h5 class="modal-title fw-bold"><i class="bi bi-plus-circle-fill text-<%= config.THEME_COLOR %>"></i> Thêm Mật Khẩu Mới</h5>
+        <h5 class="modal-title fw-bold text-<%= config.THEME_COLOR %>"><ion-icon name="add-circle"></ion-icon> Thêm Mật Khẩu Mới</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form action="/add_password" method="POST">
           <div class="modal-body py-0">
               <div class="mb-3">
-                  <label class="form-label fw-semibold">Tên hệ thống</label>
-                  <input type="text" name="title" class="form-control" placeholder="VD: Facebook Công ty, Gmail..." required>
+                  <label class="form-label fw-semibold text-secondary">Tên hệ thống</label>
+                  <input type="text" name="title" class="form-control bg-body-tertiary" placeholder="VD: Facebook Công ty, Gmail..." required>
               </div>
               <div class="row">
                   <div class="col-md-6 mb-3">
-                      <label class="form-label fw-semibold">Tài khoản</label>
-                      <input type="text" name="acc_username" class="form-control">
+                      <label class="form-label fw-semibold text-secondary">Tài khoản</label>
+                      <input type="text" name="acc_username" class="form-control bg-body-tertiary">
                   </div>
                   <div class="col-md-6 mb-3">
-                      <label class="form-label fw-semibold">Mật khẩu</label>
-                      <input type="text" name="password" class="form-control" required>
+                      <label class="form-label fw-semibold text-secondary">Mật khẩu</label>
+                      <input type="text" name="password" class="form-control bg-body-tertiary" required>
                   </div>
               </div>
               <div class="mb-3">
-                  <label class="form-label fw-semibold">Đường dẫn (URL)</label>
-                  <input type="text" name="url" class="form-control" placeholder="https://...">
+                  <label class="form-label fw-semibold text-secondary">Đường dẫn (URL)</label>
+                  <input type="text" name="url" class="form-control bg-body-tertiary" placeholder="https://...">
               </div>
               <div class="mb-3">
-                  <label class="form-label fw-semibold">Ghi chú</label>
-                  <textarea name="notes" class="form-control" rows="2" placeholder="Thông tin thêm..."></textarea>
+                  <label class="form-label fw-semibold text-secondary">Ghi chú</label>
+                  <textarea name="notes" class="form-control bg-body-tertiary" rows="2" placeholder="Thông tin thêm..."></textarea>
               </div>
               <div class="mb-3">
-                  <label class="form-label fw-semibold">Phân quyền cho User <small class="text-muted fw-normal">(Giữ Ctrl để chọn nhiều)</small></label>
-                  <select name="allowed_users" class="form-select" multiple size="3">
+                  <label class="form-label fw-semibold text-secondary">Phân quyền cho User <small class="text-muted fw-normal">(Giữ Ctrl để chọn)</small></label>
+                  <select name="allowed_users" class="form-select bg-body-tertiary" multiple size="3">
                       <% allUsers.forEach(u => { %>
                           <% if (u.id !== user.id) { %>
                           <option value="<%= u.id %>"><%= u.username %></option>
@@ -180,9 +197,9 @@
                   </select>
               </div>
           </div>
-          <div class="modal-footer border-top-0 pt-0">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-            <button type="submit" class="btn btn-<%= config.THEME_COLOR %> px-4"><i class="bi bi-save"></i> Lưu ngay</button>
+          <div class="modal-footer border-top-0 pt-3 mt-2">
+            <button type="button" class="btn btn-light fw-semibold" data-bs-dismiss="modal">Hủy</button>
+            <button type="submit" class="btn btn-<%= config.THEME_COLOR %> px-4 fw-bold shadow-sm"><ion-icon name="save"></ion-icon> Lưu ngay</button>
           </div>
       </form>
     </div>
@@ -192,14 +209,14 @@
 <!-- Manage Users Modal -->
 <div class="modal fade" id="addUserModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded-4 border-0 shadow">
-      <div class="modal-header border-bottom-0">
-        <h5 class="modal-title fw-bold"><i class="bi bi-people-fill text-success"></i> Quản lý Người Dùng</h5>
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <div class="modal-header border-bottom-0 pb-0">
+        <h5 class="modal-title fw-bold text-success"><ion-icon name="people"></ion-icon> Quản lý Người Dùng</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body py-0">
-          <div class="bg-body-tertiary p-3 rounded-3 mb-4 border">
-              <h6 class="fw-bold mb-3">Tạo tài khoản mới</h6>
+      <div class="modal-body">
+          <div class="bg-body-tertiary p-3 rounded-4 mb-4 border shadow-sm">
+              <h6 class="fw-bold mb-3"><ion-icon name="person-add"></ion-icon> Tạo tài khoản mới</h6>
               <form action="/add_user" method="POST">
                   <div class="row g-2 mb-2">
                       <div class="col-sm-6">
@@ -211,22 +228,29 @@
                   </div>
                   <div class="d-flex justify-content-between align-items-center mt-3">
                       <div class="form-check">
-                          <input type="checkbox" name="is_admin" class="form-check-input" id="checkAdmin">
-                          <label class="form-check-label text-danger" style="font-size: 0.9em;" for="checkAdmin">Cấp quyền Admin</label>
+                          <input type="checkbox" name="is_admin" class="form-check-input border-secondary" id="checkAdmin">
+                          <label class="form-check-label text-danger fw-semibold" style="font-size: 0.9em;" for="checkAdmin">Cấp quyền Admin</label>
                       </div>
-                      <button type="submit" class="btn btn-success btn-sm"><i class="bi bi-person-plus"></i> Tạo</button>
+                      <button type="submit" class="btn btn-success btn-sm fw-bold px-3 shadow-sm"><ion-icon name="add"></ion-icon> Tạo</button>
                   </div>
               </form>
           </div>
           
-          <h6 class="fw-bold mb-3">Danh sách hiện tại</h6>
-          <ul class="list-group list-group-flush border rounded-3 overflow-hidden mb-3">
+          <h6 class="fw-bold mb-3"><ion-icon name="list"></ion-icon> Danh sách tài khoản</h6>
+          <ul class="list-group list-group-flush border rounded-4 overflow-hidden mb-2 shadow-sm">
             <% allUsers.forEach(u => { %>
-                <li class="list-group-item bg-body d-flex justify-content-between align-items-center">
+                <li class="list-group-item bg-body d-flex justify-content-between align-items-center py-2">
                     <div>
-                        <i class="bi bi-person-circle text-secondary me-2"></i> <strong><%= u.username %></strong>
+                        <ion-icon name="person-circle" class="text-secondary me-2 fs-5"></ion-icon> <strong style="vertical-align: super;"><%= u.username %></strong>
                     </div>
-                    <% if (u.is_admin) { %><span class="badge bg-danger rounded-pill">Admin</span><% } else { %><span class="badge bg-secondary rounded-pill">User</span><% } %>
+                    <div>
+                        <% if (u.is_admin) { %><span class="badge bg-danger rounded-pill me-2">Admin</span><% } else { %><span class="badge bg-secondary rounded-pill me-2">User</span><% } %>
+                        <% if (u.id !== user.id) { %>
+                            <form action="/delete_user/<%= u.id %>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa user <%= u.username %> không?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger border-0 p-1" title="Xóa User"><ion-icon name="trash" class="icon-only fs-6"></ion-icon></button>
+                            </form>
+                        <% } %>
+                    </div>
                 </li>
             <% }) %>
           </ul>
@@ -236,21 +260,21 @@
 </div>
 <% } %>
 
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // Xử lý nút xem mật khẩu
     function togglePassword(id, password) {
         let el = document.getElementById('pw-' + id);
-        let btnIcon = el.nextElementSibling.querySelector('i');
+        let btnIcon = document.getElementById('icon-' + id);
         
         if (el.innerText === '••••••••') {
             el.innerText = password;
-            btnIcon.classList.remove('bi-eye');
-            btnIcon.classList.add('bi-eye-slash');
+            btnIcon.setAttribute('name', 'eye-off');
         } else {
             el.innerText = '••••••••';
-            btnIcon.classList.remove('bi-eye-slash');
-            btnIcon.classList.add('bi-eye');
+            btnIcon.setAttribute('name', 'eye');
         }
     }
 
@@ -261,14 +285,16 @@
     const savedTheme = localStorage.getItem('theme') || 'light';
     
     htmlEl.setAttribute('data-bs-theme', savedTheme);
-    themeIcon.className = savedTheme === 'dark' ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-fill';
+    themeIcon.setAttribute('name', savedTheme === 'dark' ? 'sunny' : 'moon');
+    if(savedTheme === 'dark') themeIcon.style.color = '#ffc107';
 
     themeBtn.addEventListener('click', () => {
         const current = htmlEl.getAttribute('data-bs-theme');
         const next = current === 'dark' ? 'light' : 'dark';
         htmlEl.setAttribute('data-bs-theme', next);
         localStorage.setItem('theme', next);
-        themeIcon.className = next === 'dark' ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-fill';
+        themeIcon.setAttribute('name', next === 'dark' ? 'sunny' : 'moon');
+        themeIcon.style.color = next === 'dark' ? '#ffc107' : '';
     });
 </script>
 </body>
