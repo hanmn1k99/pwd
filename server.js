@@ -165,7 +165,9 @@ app.get('/', requireLogin, (req, res) => {
 app.post('/add_password', requireLogin, (req, res) => {
     if (!req.session.user.is_admin) return res.status(403).send("Forbidden");
     
-    const { title, acc_username, password, url, notes, allowed_users } = req.body;
+    let { title, acc_username, password, url, notes, allowed_users } = req.body;
+    if (url && !url.startsWith('http://') && !url.startsWith('https://')) url = 'https://' + url;
+    
     const enc = encrypt(password);
     
     db.run(`INSERT INTO passwords (title, acc_username, encrypted_password, iv, url, notes) VALUES (?, ?, ?, ?, ?, ?)`,
@@ -227,6 +229,32 @@ app.post('/delete_user/:id', requireLogin, (req, res) => {
     db.run("DELETE FROM users WHERE id = ?", [req.params.id], (err) => {
         db.run("DELETE FROM access WHERE user_id = ?", [req.params.id]);
         res.redirect('/?msg=user_deleted');
+    });
+});
+
+app.post('/edit_password/:id', requireLogin, (req, res) => {
+    if (!req.session.user.is_admin) return res.status(403).send("Forbidden");
+    let { title, acc_username, password, url, notes, allowed_users } = req.body;
+    
+    if (url && !url.startsWith('http://') && !url.startsWith('https://')) url = 'https://' + url;
+    
+    db.run(`UPDATE passwords SET title=?, acc_username=?, url=?, notes=? WHERE id=?`, 
+        [title, acc_username, url, notes, req.params.id], (err) => {
+        
+        if (password && password.trim() !== '') {
+            const enc = encrypt(password);
+            db.run(`UPDATE passwords SET encrypted_password=?, iv=? WHERE id=?`, [enc.encryptedData, enc.iv, req.params.id]);
+        }
+        
+        db.run(`DELETE FROM access WHERE password_id=? AND user_id != ?`, [req.params.id, req.session.user.id], () => {
+            if (allowed_users) {
+                const usersArr = Array.isArray(allowed_users) ? allowed_users : [allowed_users];
+                usersArr.forEach(uid => {
+                    db.run("INSERT OR IGNORE INTO access (user_id, password_id) VALUES (?, ?)", [uid, req.params.id]);
+                });
+            }
+        });
+        res.redirect('/?msg=updated');
     });
 });
 
