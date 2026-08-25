@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,8 +7,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
-        body { background-color: #f4f6f9; }
-        .password-text { font-family: monospace; font-size: 1.1em; background: #e9ecef; padding: 2px 8px; border-radius: 4px; letter-spacing: 1px; }
+        body { background-color: var(--bs-body-bg); transition: background-color 0.3s; }
+        .password-text { font-family: monospace; font-size: 1.1em; background: var(--bs-tertiary-bg); padding: 2px 8px; border-radius: 4px; letter-spacing: 1px; }
         .card { transition: transform 0.2s; }
         .card:hover { transform: translateY(-3px); }
     </style>
@@ -20,12 +20,15 @@
     <div class="container">
         <a class="navbar-brand fw-bold" href="#"><i class="bi bi-shield-lock-fill text-<%= config.THEME_COLOR %>"></i> <%= config.SITE_NAME %></a>
         <div class="d-flex align-items-center">
-            <span class="text-light me-3">
+            <button id="themeToggle" class="btn btn-outline-light btn-sm me-3 border-0" title="Chuyển chế độ Sáng/Tối">
+                <i id="themeIcon" class="bi bi-moon-fill"></i>
+            </button>
+            <span class="text-light me-3 d-none d-sm-inline">
                 Xin chào, <strong><%= user.username %></strong> 
                 <% if (user.is_admin) { %><span class="badge bg-danger ms-1">Admin</span><% } %>
             </span>
-            <button class="btn btn-outline-info btn-sm me-2" data-bs-toggle="modal" data-bs-target="#changePwModal"><i class="bi bi-key"></i> Đổi mật khẩu</button>
-            <a href="/logout" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right"></i> Đăng xuất</a>
+            <button class="btn btn-outline-info btn-sm me-2" data-bs-toggle="modal" data-bs-target="#changePwModal"><i class="bi bi-key"></i> Đổi MK</button>
+            <a href="/logout" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right"></i> Thoát</a>
         </div>
     </div>
 </nav>
@@ -40,42 +43,42 @@
     <% if (msg === 'deleted') { %> <div class="alert alert-warning alert-dismissible fade show shadow-sm"><i class="bi bi-trash-fill"></i> Đã xóa mật khẩu! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
 
     <!-- Header & Actions -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <h4 class="mb-0 text-secondary fw-bold"><i class="bi bi-key-fill"></i> Danh sách của bạn</h4>
         <% if (user.is_admin) { %>
         <div>
-            <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addPasswordModal"><i class="bi bi-plus-circle"></i> Thêm Mật khẩu</button>
+            <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addPasswordModal"><i class="bi bi-plus-circle"></i> Thêm MK</button>
             <button class="btn btn-success shadow-sm ms-2" data-bs-toggle="modal" data-bs-target="#addUserModal"><i class="bi bi-people-fill"></i> Quản lý User</button>
         </div>
         <% } %>
     </div>
 
     <!-- Passwords Grid -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
         <% if (passwords.length > 0) { %>
             <% passwords.forEach(p => { %>
             <div class="col">
                 <div class="card h-100 shadow-sm border-0 rounded-4">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h5 class="card-title text-primary fw-bold mb-0"><%= p.title %></h5>
+                            <h5 class="card-title text-<%= config.THEME_COLOR %> fw-bold mb-0"><%= p.title %></h5>
                             <div>
-                                <% if (p.url) { %><a href="<%= p.url %>" target="_blank" class="btn btn-sm btn-light border"><i class="bi bi-box-arrow-up-right"></i></a><% } %>
+                                <% if (p.url) { %><a href="<%= p.url %>" target="_blank" class="btn btn-sm btn-outline-secondary border-0"><i class="bi bi-box-arrow-up-right"></i></a><% } %>
                                 <% if (user.is_admin) { %>
                                     <form action="/delete_password/<%= p.id %>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa mật khẩu này không?');">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger border-0"><i class="bi bi-trash"></i></button>
                                     </form>
                                 <% } %>
                             </div>
                         </div>
                         <div class="mb-2">
                             <small class="text-muted d-block text-uppercase" style="font-size: 0.75em; letter-spacing: 0.5px;">Tài khoản</small>
-                            <strong class="text-dark"><%= p.acc_username %></strong>
+                            <strong class="text-body"><%= p.acc_username %></strong>
                         </div>
                         <div class="mb-3">
                             <small class="text-muted d-block text-uppercase" style="font-size: 0.75em; letter-spacing: 0.5px;">Mật khẩu</small>
                             <div class="input-group input-group-sm mt-1">
-                                <span class="input-group-text bg-light password-text border-end-0" id="pw-<%= p.id %>">••••••••</span>
+                                <span class="input-group-text password-text border-end-0" id="pw-<%= p.id %>">••••••••</span>
                                 <button class="btn btn-outline-secondary border-start-0" type="button" onclick="togglePassword('<%= p.id %>', '<%= p.decrypted.replace(/'/g, "\\'") %>')"><i class="bi bi-eye"></i></button>
                             </div>
                         </div>
@@ -87,7 +90,7 @@
                         <% } %>
                     </div>
                     <% if (user.is_admin && p.shared_with) { %>
-                    <div class="card-footer bg-light border-top pt-2 pb-2 rounded-bottom-4">
+                    <div class="card-footer bg-body-tertiary border-top pt-2 pb-2 rounded-bottom-4">
                         <small class="text-muted d-block mb-1" style="font-size: 0.8em;"><i class="bi bi-share-fill"></i> Chia sẻ với:</small>
                         <div class="d-flex flex-wrap gap-1">
                         <% p.shared_with.forEach(u => { %> <span class="badge bg-secondary fw-normal"><%= u %></span> <% }) %>
@@ -99,7 +102,7 @@
             <% }) %>
         <% } else { %>
             <div class="col-12">
-                <div class="text-center p-5 bg-white rounded-4 shadow-sm text-muted">
+                <div class="text-center p-5 bg-body rounded-4 shadow-sm text-muted">
                     <i class="bi bi-inbox fs-1"></i>
                     <p class="mt-3 fs-5">Chưa có mật khẩu nào được chia sẻ với bạn.</p>
                 </div>
@@ -139,7 +142,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content rounded-4 border-0 shadow">
       <div class="modal-header border-bottom-0">
-        <h5 class="modal-title fw-bold"><i class="bi bi-plus-circle-fill text-primary"></i> Thêm Mật Khẩu Mới</h5>
+        <h5 class="modal-title fw-bold"><i class="bi bi-plus-circle-fill text-<%= config.THEME_COLOR %>"></i> Thêm Mật Khẩu Mới</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form action="/add_password" method="POST">
@@ -178,8 +181,8 @@
               </div>
           </div>
           <div class="modal-footer border-top-0 pt-0">
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
-            <button type="submit" class="btn btn-primary px-4"><i class="bi bi-save"></i> Lưu ngay</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+            <button type="submit" class="btn btn-<%= config.THEME_COLOR %> px-4"><i class="bi bi-save"></i> Lưu ngay</button>
           </div>
       </form>
     </div>
@@ -195,7 +198,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body py-0">
-          <div class="bg-light p-3 rounded-3 mb-4 border">
+          <div class="bg-body-tertiary p-3 rounded-3 mb-4 border">
               <h6 class="fw-bold mb-3">Tạo tài khoản mới</h6>
               <form action="/add_user" method="POST">
                   <div class="row g-2 mb-2">
@@ -219,7 +222,7 @@
           <h6 class="fw-bold mb-3">Danh sách hiện tại</h6>
           <ul class="list-group list-group-flush border rounded-3 overflow-hidden mb-3">
             <% allUsers.forEach(u => { %>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
+                <li class="list-group-item bg-body d-flex justify-content-between align-items-center">
                     <div>
                         <i class="bi bi-person-circle text-secondary me-2"></i> <strong><%= u.username %></strong>
                     </div>
@@ -235,6 +238,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // Xử lý nút xem mật khẩu
     function togglePassword(id, password) {
         let el = document.getElementById('pw-' + id);
         let btnIcon = el.nextElementSibling.querySelector('i');
@@ -249,6 +253,23 @@
             btnIcon.classList.add('bi-eye');
         }
     }
+
+    // Xử lý Dark/Light Mode
+    const htmlEl = document.documentElement;
+    const themeBtn = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    
+    htmlEl.setAttribute('data-bs-theme', savedTheme);
+    themeIcon.className = savedTheme === 'dark' ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-fill';
+
+    themeBtn.addEventListener('click', () => {
+        const current = htmlEl.getAttribute('data-bs-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        htmlEl.setAttribute('data-bs-theme', next);
+        localStorage.setItem('theme', next);
+        themeIcon.className = next === 'dark' ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-fill';
+    });
 </script>
 </body>
 </html>

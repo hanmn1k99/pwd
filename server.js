@@ -98,6 +98,14 @@ app.post('/login', (req, res) => {
     db.get("SELECT * FROM users WHERE username = ?", [req.body.username], (err, user) => {
         if (user && bcrypt.compareSync(req.body.password, user.password_hash)) {
             req.session.user = user;
+            
+            // Xử lý Ghi nhớ đăng nhập (30 ngày)
+            if (req.body.remember === 'on') {
+                req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000;
+            } else {
+                req.session.cookie.expires = false; // Cookie sẽ mất khi đóng trình duyệt
+            }
+            
             res.redirect('/');
         } else {
             res.render('login', { error: 'Sai tài khoản hoặc mật khẩu' });
