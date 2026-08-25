@@ -55,6 +55,12 @@
         [data-bs-theme="dark"] .list-group { border-color: rgba(255,255,255,0.15) !important; }
         [data-bs-theme="dark"] .list-group-item { background-color: #1e293b !important; border-color: rgba(255,255,255,0.1) !important; color: #f8fafc; }
         [data-bs-theme="dark"] .list-group-item:hover { background-color: rgba(255,255,255,0.05) !important; }
+        
+        /* Badges */
+        .badge-admin { background-color: #dc3545; color: white; }
+        .badge-user { background-color: #6c757d; color: white; }
+        [data-bs-theme="dark"] .badge-admin { background-color: rgba(248,113,113,0.15) !important; color: #f87171 !important; border: 1px solid rgba(248,113,113,0.3); }
+        [data-bs-theme="dark"] .badge-user { background-color: rgba(148,163,184,0.1) !important; color: #94a3b8 !important; border: 1px solid rgba(148,163,184,0.3); }
     </style>
 </head>
 <body>
@@ -363,13 +369,20 @@
                     <div>
                         <ion-icon name="person-circle" class="text-secondary me-2 fs-5"></ion-icon> <strong style="vertical-align: super;"><%= u.username %></strong>
                     </div>
-                    <div>
-                        <% if (u.is_admin) { %><span class="badge bg-danger rounded-pill me-2">Admin</span><% } else { %><span class="badge bg-secondary rounded-pill me-2">User</span><% } %>
-                        <% if (u.id !== user.id) { %>
-                            <form action="/delete_user/<%= u.id %>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa user <%= u.username %> không?');">
-                                <button type="submit" class="btn btn-sm btn-outline-danger border-0 p-1" title="Xóa User"><ion-icon name="trash" class="icon-only fs-6"></ion-icon></button>
-                            </form>
+                    <div class="d-flex align-items-center justify-content-end">
+                        <% if (u.is_admin) { %>
+                            <span class="badge badge-admin rounded-pill fw-normal">Admin</span>
+                        <% } else { %>
+                            <span class="badge badge-user rounded-pill fw-normal">User</span>
                         <% } %>
+                        
+                        <div style="width: 32px; text-align: right;" class="ms-2">
+                            <% if (u.id !== user.id) { %>
+                                <form action="/delete_user/<%= u.id %>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa user <%= u.username %> không?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger border-0 p-1" title="Xóa User"><ion-icon name="trash" class="icon-only fs-6"></ion-icon></button>
+                                </form>
+                            <% } %>
+                        </div>
                     </div>
                 </li>
             <% }) %>
