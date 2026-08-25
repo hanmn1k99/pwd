@@ -2,108 +2,217 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard Nội Bộ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard - Mật khẩu Nội bộ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background: #f4f4f9; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        input, button, select { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
-        button { background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        .flash { background: #d4edda; color: #155724; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
-        .password-card { border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 6px; background: #fafafa; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .btn-sm { width: auto; padding: 5px 10px; font-size: 13px; margin: 0; }
-        .badge { background: #6c757d; color: white; padding: 3px 6px; border-radius: 3px; font-size: 12px; margin-right: 3px;}
-        hr { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
-        h2, h3, h4 { color: #333; }
+        body { background-color: #f4f6f9; }
+        .password-text { font-family: monospace; font-size: 1.1em; background: #e9ecef; padding: 2px 8px; border-radius: 4px; letter-spacing: 1px; }
+        .card { transition: transform 0.2s; }
+        .card:hover { transform: translateY(-3px); }
     </style>
 </head>
 <body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
     <div class="container">
-        <% if (msg === 'added') { %> <div class="flash">Đã thêm mật khẩu!</div> <% } %>
-        <% if (msg === 'useradded') { %> <div class="flash">Đã tạo User!</div> <% } %>
-        <% if (msg === 'userexists') { %> <div class="flash" style="background:#f8d7da;color:#721c24;">Tên User đã tồn tại!</div> <% } %>
-
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2 style="margin:0">Xin chào, <%= user.username %> <% if (user.is_admin) { %><span style="color:red; font-size: 16px;">(Admin)</span><% } %></h2>
-            <a href="/logout"><button class="btn-sm" style="background: #dc3545;">Đăng xuất</button></a>
+        <a class="navbar-brand fw-bold" href="#"><i class="bi bi-shield-lock-fill text-primary"></i> Kho Mật Khẩu</a>
+        <div class="d-flex align-items-center">
+            <span class="text-light me-3">
+                Xin chào, <strong><%= user.username %></strong> 
+                <% if (user.is_admin) { %><span class="badge bg-danger ms-1">Admin</span><% } %>
+            </span>
+            <a href="/logout" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right"></i> Đăng xuất</a>
         </div>
-        <hr>
+    </div>
+</nav>
 
-        <h3>Danh sách Mật khẩu của bạn</h3>
-        <% if (passwords.length > 0) { %>
-            <% passwords.forEach(p => { %>
-            <div class="password-card">
-                <strong style="font-size: 18px;"><%= p.title %></strong>
-                <% if (p.url) { %><a href="<%= p.url %>" target="_blank" style="text-decoration: none;">🔗 Link</a><% } %><br><br>
-                Tài khoản: <strong><%= p.acc_username %></strong><br>
-                Mật khẩu: <span id="pw-<%= p.id %>" style="font-family: monospace; font-size: 16px; background: #e9ecef; padding: 2px 6px; border-radius: 3px;">••••••••</span>
-                <button class="btn-sm" onclick="togglePassword('<%= p.id %>', '<%= p.decrypted.replace(/'/g, "\\'") %>')">👁️ Hiện/Ẩn</button><br>
-                <% if (p.notes) { %><i style="color: #666; display: block; margin-top: 5px;">Ghi chú: <%= p.notes %></i><% } %>
-                
-                <% if (user.is_admin && p.shared_with) { %>
-                <div style="margin-top: 10px; font-size: 12px; color: #555;">
-                    Được chia sẻ cho: 
-                    <% p.shared_with.forEach(u => { %> <span class="badge"><%= u %></span> <% }) %>
-                </div>
-                <% } %>
-            </div>
-            <% }) %>
-        <% } else { %>
-            <div style="background: #e9ecef; padding: 20px; text-align: center; color: #666; border-radius: 5px;">Chưa có mật khẩu nào được chia sẻ với bạn.</div>
-        <% } %>
+<div class="container">
+    <!-- Messages -->
+    <% if (msg === 'added') { %> <div class="alert alert-success alert-dismissible fade show shadow-sm"><i class="bi bi-check-circle-fill"></i> Đã thêm mật khẩu thành công! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
+    <% if (msg === 'useradded') { %> <div class="alert alert-success alert-dismissible fade show shadow-sm"><i class="bi bi-person-check-fill"></i> Đã tạo người dùng mới! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
+    <% if (msg === 'userexists') { %> <div class="alert alert-danger alert-dismissible fade show shadow-sm"><i class="bi bi-exclamation-triangle-fill"></i> Tên người dùng đã tồn tại! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
 
+    <!-- Header & Actions -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0 text-secondary fw-bold"><i class="bi bi-key-fill"></i> Danh sách của bạn</h4>
         <% if (user.is_admin) { %>
-        <hr>
-        <div class="grid-2">
-            <div style="background: #eef2f5; padding: 15px; border-radius: 6px;">
-                <h3>🔑 Thêm Mật khẩu mới</h3>
-                <form action="/add_password" method="POST">
-                    <input type="text" name="title" placeholder="Tên hệ thống (VD: Facebook Công ty)" required>
-                    <input type="text" name="acc_username" placeholder="Tài khoản đăng nhập">
-                    <input type="text" name="password" placeholder="Mật khẩu" required>
-                    <input type="text" name="url" placeholder="Đường dẫn URL (Tùy chọn)">
-                    <input type="text" name="notes" placeholder="Ghi chú (Tùy chọn)">
-                    
-                    <label style="display: block; margin-top: 10px; font-size: 14px;"><strong>Cấp quyền cho User:</strong> (Giữ Ctrl để chọn nhiều)</label>
-                    <select name="allowed_users" multiple style="height: 80px; margin-top: 5px;">
-                        <% allUsers.forEach(u => { %>
-                            <% if (u.id !== user.id) { %>
-                            <option value="<%= u.id %>"><%= u.username %></option>
-                            <% } %>
-                        <% }) %>
-                    </select>
-                    <button type="submit" style="margin-top: 10px;">Lưu & Phân quyền</button>
-                </form>
-            </div>
-            
-            <div style="background: #eef2f5; padding: 15px; border-radius: 6px;">
-                <h3>👤 Quản lý User</h3>
-                <form action="/add_user" method="POST" style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #ddd;">
-                    <input type="text" name="username" placeholder="Tên đăng nhập mới" required>
-                    <input type="text" name="password" placeholder="Mật khẩu cho user" required>
-                    <label style="display: block; margin: 10px 0;"><input type="checkbox" name="is_admin" style="width: auto; margin-right: 5px;"> Cấp quyền Admin?</label>
-                    <button type="submit" style="background: #28a745;">Tạo User</button>
-                </form>
-                
-                <h4>Danh sách User hiện tại:</h4>
-                <ul style="margin: 0; padding-left: 20px;">
-                <% allUsers.forEach(u => { %>
-                    <li style="margin-bottom: 5px;"><strong><%= u.username %></strong> <% if (u.is_admin) { %><span style="color:red; font-size: 12px;">(Admin)</span><% } %></li>
-                <% }) %>
-                </ul>
-            </div>
+        <div>
+            <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addPasswordModal"><i class="bi bi-plus-circle"></i> Thêm Mật khẩu</button>
+            <button class="btn btn-success shadow-sm ms-2" data-bs-toggle="modal" data-bs-target="#addUserModal"><i class="bi bi-people-fill"></i> Quản lý User</button>
         </div>
         <% } %>
     </div>
-    <script>
-        function togglePassword(id, password) {
-            let el = document.getElementById('pw-' + id);
-            if (el.innerText === '••••••••') {
-                el.innerText = password;
-            } else {
-                el.innerText = '••••••••';
-            }
+
+    <!-- Passwords Grid -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <% if (passwords.length > 0) { %>
+            <% passwords.forEach(p => { %>
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 rounded-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="card-title text-primary fw-bold mb-0"><%= p.title %></h5>
+                            <% if (p.url) { %><a href="<%= p.url %>" target="_blank" class="btn btn-sm btn-light border"><i class="bi bi-box-arrow-up-right"></i></a><% } %>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted d-block text-uppercase" style="font-size: 0.75em; letter-spacing: 0.5px;">Tài khoản</small>
+                            <strong class="text-dark"><%= p.acc_username %></strong>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted d-block text-uppercase" style="font-size: 0.75em; letter-spacing: 0.5px;">Mật khẩu</small>
+                            <div class="input-group input-group-sm mt-1">
+                                <span class="input-group-text bg-light password-text border-end-0" id="pw-<%= p.id %>">••••••••</span>
+                                <button class="btn btn-outline-secondary border-start-0" type="button" onclick="togglePassword('<%= p.id %>', '<%= p.decrypted.replace(/'/g, "\\'") %>')"><i class="bi bi-eye"></i></button>
+                            </div>
+                        </div>
+                        <% if (p.notes) { %>
+                        <div class="mb-3">
+                            <small class="text-muted d-block text-uppercase" style="font-size: 0.75em; letter-spacing: 0.5px;">Ghi chú</small>
+                            <span class="text-secondary" style="font-size: 0.9em;"><%= p.notes %></span>
+                        </div>
+                        <% } %>
+                    </div>
+                    <% if (user.is_admin && p.shared_with) { %>
+                    <div class="card-footer bg-light border-top pt-2 pb-2 rounded-bottom-4">
+                        <small class="text-muted d-block mb-1" style="font-size: 0.8em;"><i class="bi bi-share-fill"></i> Chia sẻ với:</small>
+                        <div class="d-flex flex-wrap gap-1">
+                        <% p.shared_with.forEach(u => { %> <span class="badge bg-secondary fw-normal"><%= u %></span> <% }) %>
+                        </div>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+            <% }) %>
+        <% } else { %>
+            <div class="col-12">
+                <div class="text-center p-5 bg-white rounded-4 shadow-sm text-muted">
+                    <i class="bi bi-inbox fs-1"></i>
+                    <p class="mt-3 fs-5">Chưa có mật khẩu nào được chia sẻ với bạn.</p>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<% if (user.is_admin) { %>
+<!-- Add Password Modal -->
+<div class="modal fade" id="addPasswordModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title fw-bold"><i class="bi bi-plus-circle-fill text-primary"></i> Thêm Mật Khẩu Mới</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form action="/add_password" method="POST">
+          <div class="modal-body py-0">
+              <div class="mb-3">
+                  <label class="form-label fw-semibold">Tên hệ thống</label>
+                  <input type="text" name="title" class="form-control" placeholder="VD: Facebook Công ty, Gmail..." required>
+              </div>
+              <div class="row">
+                  <div class="col-md-6 mb-3">
+                      <label class="form-label fw-semibold">Tài khoản</label>
+                      <input type="text" name="acc_username" class="form-control">
+                  </div>
+                  <div class="col-md-6 mb-3">
+                      <label class="form-label fw-semibold">Mật khẩu</label>
+                      <input type="text" name="password" class="form-control" required>
+                  </div>
+              </div>
+              <div class="mb-3">
+                  <label class="form-label fw-semibold">Đường dẫn (URL)</label>
+                  <input type="text" name="url" class="form-control" placeholder="https://...">
+              </div>
+              <div class="mb-3">
+                  <label class="form-label fw-semibold">Ghi chú</label>
+                  <textarea name="notes" class="form-control" rows="2" placeholder="Thông tin thêm..."></textarea>
+              </div>
+              <div class="mb-3">
+                  <label class="form-label fw-semibold">Phân quyền cho User <small class="text-muted fw-normal">(Giữ Ctrl để chọn nhiều)</small></label>
+                  <select name="allowed_users" class="form-select" multiple size="3">
+                      <% allUsers.forEach(u => { %>
+                          <% if (u.id !== user.id) { %>
+                          <option value="<%= u.id %>"><%= u.username %></option>
+                          <% } %>
+                      <% }) %>
+                  </select>
+              </div>
+          </div>
+          <div class="modal-footer border-top-0 pt-0">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+            <button type="submit" class="btn btn-primary px-4"><i class="bi bi-save"></i> Lưu ngay</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Manage Users Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title fw-bold"><i class="bi bi-people-fill text-success"></i> Quản lý Người Dùng</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body py-0">
+          <div class="bg-light p-3 rounded-3 mb-4 border">
+              <h6 class="fw-bold mb-3">Tạo tài khoản mới</h6>
+              <form action="/add_user" method="POST">
+                  <div class="row g-2 mb-2">
+                      <div class="col-sm-6">
+                          <input type="text" name="username" class="form-control form-control-sm" placeholder="Tên đăng nhập" required>
+                      </div>
+                      <div class="col-sm-6">
+                          <input type="text" name="password" class="form-control form-control-sm" placeholder="Mật khẩu" required>
+                      </div>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center mt-3">
+                      <div class="form-check">
+                          <input type="checkbox" name="is_admin" class="form-check-input" id="checkAdmin">
+                          <label class="form-check-label text-danger" style="font-size: 0.9em;" for="checkAdmin">Cấp quyền Admin</label>
+                      </div>
+                      <button type="submit" class="btn btn-success btn-sm"><i class="bi bi-person-plus"></i> Tạo</button>
+                  </div>
+              </form>
+          </div>
+          
+          <h6 class="fw-bold mb-3">Danh sách hiện tại</h6>
+          <ul class="list-group list-group-flush border rounded-3 overflow-hidden mb-3">
+            <% allUsers.forEach(u => { %>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="bi bi-person-circle text-secondary me-2"></i> <strong><%= u.username %></strong>
+                    </div>
+                    <% if (u.is_admin) { %><span class="badge bg-danger rounded-pill">Admin</span><% } else { %><span class="badge bg-secondary rounded-pill">User</span><% } %>
+                </li>
+            <% }) %>
+          </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<% } %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function togglePassword(id, password) {
+        let el = document.getElementById('pw-' + id);
+        let btnIcon = el.nextElementSibling.querySelector('i');
+        
+        if (el.innerText === '••••••••') {
+            el.innerText = password;
+            btnIcon.classList.remove('bi-eye');
+            btnIcon.classList.add('bi-eye-slash');
+        } else {
+            el.innerText = '••••••••';
+            btnIcon.classList.remove('bi-eye-slash');
+            btnIcon.classList.add('bi-eye');
         }
-    </script>
+    }
+</script>
 </body>
 </html>
