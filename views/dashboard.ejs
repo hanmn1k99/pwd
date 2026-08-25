@@ -7,20 +7,36 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background-color: var(--bs-body-bg); transition: background-color 0.3s; }
-        .password-text { font-family: monospace; font-size: 1.15em; background: var(--bs-tertiary-bg); padding: 4px 10px; border-radius: 4px; letter-spacing: 1px; }
-        .card { transition: all 0.2s ease-in-out; border: 1px solid var(--bs-border-color-translucent); }
+        
+        .card { transition: all 0.25s ease; border: 1px solid var(--bs-border-color-translucent); }
         .card:hover { transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; }
+        
         ion-icon { pointer-events: none; vertical-align: text-bottom; margin-right: 4px; font-size: 1.15em; }
         .btn ion-icon { margin-right: 2px; }
         .icon-only { margin-right: 0 !important; }
         
-        /* Hiệu ứng mờ dần cho thông báo */
         .fade-out { transition: opacity 0.5s ease, transform 0.5s ease; opacity: 0; transform: translateY(-20px); }
+        
+        /* Cải thiện hiển thị Chế độ Dark Mode cao cấp hơn */
+        [data-bs-theme="dark"] body { background-color: #121212; }
+        [data-bs-theme="dark"] .card { 
+            background-color: #1e1e1e; 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
+        }
+        [data-bs-theme="dark"] .card:hover { 
+            border-color: rgba(255, 255, 255, 0.25); 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.8) !important; 
+            transform: translateY(-4px);
+        }
+        [data-bs-theme="dark"] .bg-body-tertiary { background-color: #252525 !important; }
+        [data-bs-theme="dark"] .navbar { background-color: #000000 !important; border-bottom: 1px solid #333; }
+        [data-bs-theme="dark"] .modal-content { background-color: #1e1e1e; border: 1px solid #333; }
     </style>
 </head>
 <body>
 
-<!-- Thông báo dạng nổi ở góc trên bên phải (Toasts style) -->
+<!-- Thông báo dạng nổi ở góc trên bên phải -->
 <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050">
     <% if (msg === 'added') { %> <div class="alert alert-success shadow-sm auto-dismiss-alert"><ion-icon name="checkmark-circle"></ion-icon> Đã lưu tài khoản thành công!</div> <% } %>
     <% if (msg === 'updated') { %> <div class="alert alert-success shadow-sm auto-dismiss-alert"><ion-icon name="checkmark-circle"></ion-icon> Đã cập nhật tài khoản!</div> <% } %>
@@ -48,7 +64,6 @@
                 Xin chào, <strong><%= user.username %></strong> 
                 <% if (user.is_admin) { %><span class="badge bg-danger ms-1">Admin</span><% } %>
             </span>
-            <!-- Nút đổi mk outline -->
             <button class="btn btn-outline-info btn-sm me-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#changePwModal">
                 <ion-icon name="key"></ion-icon> Đổi Mật Khẩu
             </button>
@@ -65,7 +80,6 @@
         <h4 class="mb-0 text-secondary fw-bold d-flex align-items-center"><ion-icon name="folder-open" class="me-2"></ion-icon> Kho Tài Khoản</h4>
         <% if (user.is_admin) { %>
         <div>
-            <!-- Các nút outline -->
             <button class="btn btn-outline-primary shadow-sm fw-bold border-2" data-bs-toggle="modal" data-bs-target="#addPasswordModal">
                 <ion-icon name="add-circle"></ion-icon> Thêm Tài Khoản
             </button>
@@ -103,11 +117,12 @@
                             <strong class="text-body fs-6"><%= p.acc_username %></strong>
                         </div>
                         <div class="mb-3">
-                            <small class="text-muted d-block text-uppercase fw-bold mb-1" style="font-size: 0.70em; letter-spacing: 1px;"><ion-icon name="lock-closed"></ion-icon> Mật khẩu</small>
-                            <div class="input-group">
-                                <span class="input-group-text password-text border-end-0 flex-grow-1" id="pw-<%= p.id %>">••••••••</span>
-                                <button class="btn btn-outline-secondary border-start-0" type="button" onclick="togglePassword('<%= p.id %>', '<%= p.decrypted.replace(/'/g, "\\'") %>')">
-                                    <ion-icon name="eye" class="icon-only" id="icon-<%= p.id %>"></ion-icon>
+                            <small class="text-muted d-block text-uppercase fw-bold mb-2" style="font-size: 0.70em; letter-spacing: 1px;"><ion-icon name="lock-closed"></ion-icon> Mật khẩu</small>
+                            <!-- Khung chứa mật khẩu đã được làm viền bao quanh toàn bộ -->
+                            <div class="d-flex align-items-center border border-secondary-subtle rounded-3 overflow-hidden bg-body-tertiary">
+                                <span class="flex-grow-1 px-3 py-2 mb-0 font-monospace text-body" id="pw-<%= p.id %>" style="font-size: 1.15em; letter-spacing: 2px;">••••••••</span>
+                                <button class="btn btn-link text-secondary text-decoration-none border-0 px-3 border-start border-secondary-subtle rounded-0" type="button" onclick="togglePassword('<%= p.id %>', '<%= p.decrypted.replace(/'/g, "\\'") %>')">
+                                    <ion-icon name="eye" class="icon-only fs-5" id="icon-<%= p.id %>"></ion-icon>
                                 </button>
                             </div>
                         </div>
@@ -158,7 +173,6 @@
               </div>
           </div>
           <div class="modal-footer border-top-0 pt-0">
-            <!-- Nút outline -->
             <button type="submit" class="btn btn-outline-info border-2 w-100 fw-bold shadow-sm">Xác nhận đổi</button>
           </div>
       </form>
@@ -331,11 +345,10 @@
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Ẩn thông báo sau 3 giây
     setTimeout(() => {
         document.querySelectorAll('.auto-dismiss-alert').forEach(el => {
             el.classList.add('fade-out');
-            setTimeout(() => el.remove(), 500); // Đợi CSS transition xong thì xóa DOM
+            setTimeout(() => el.remove(), 500); 
         });
     }, 3000);
 
