@@ -50,6 +50,11 @@
         [data-bs-theme="dark"] .text-muted { color: #94a3b8 !important; }
         [data-bs-theme="dark"] .border-secondary-subtle { border-color: rgba(255,255,255,0.15) !important; }
         [data-bs-theme="dark"] .font-monospace { color: #60a5fa !important; font-weight: bold; }
+        
+        /* Tùy chỉnh danh sách (List group) */
+        [data-bs-theme="dark"] .list-group { border-color: rgba(255,255,255,0.15) !important; }
+        [data-bs-theme="dark"] .list-group-item { background-color: #1e293b !important; border-color: rgba(255,255,255,0.1) !important; color: #f8fafc; }
+        [data-bs-theme="dark"] .list-group-item:hover { background-color: rgba(255,255,255,0.05) !important; }
     </style>
 </head>
 <body>
@@ -354,7 +359,7 @@
           <h6 class="fw-bold mb-3"><ion-icon name="list"></ion-icon> Danh sách tài khoản</h6>
           <ul class="list-group list-group-flush border rounded-4 overflow-hidden mb-2 shadow-sm">
             <% allUsers.forEach(u => { %>
-                <li class="list-group-item bg-body d-flex justify-content-between align-items-center py-2">
+                <li class="list-group-item d-flex justify-content-between align-items-center py-2">
                     <div>
                         <ion-icon name="person-circle" class="text-secondary me-2 fs-5"></ion-icon> <strong style="vertical-align: super;"><%= u.username %></strong>
                     </div>
