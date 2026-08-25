@@ -13,9 +13,25 @@
         ion-icon { pointer-events: none; vertical-align: text-bottom; margin-right: 4px; font-size: 1.15em; }
         .btn ion-icon { margin-right: 2px; }
         .icon-only { margin-right: 0 !important; }
+        
+        /* Hiệu ứng mờ dần cho thông báo */
+        .fade-out { transition: opacity 0.5s ease, transform 0.5s ease; opacity: 0; transform: translateY(-20px); }
     </style>
 </head>
 <body>
+
+<!-- Thông báo dạng nổi ở góc trên bên phải (Toasts style) -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1050">
+    <% if (msg === 'added') { %> <div class="alert alert-success shadow-sm auto-dismiss-alert"><ion-icon name="checkmark-circle"></ion-icon> Đã lưu tài khoản thành công!</div> <% } %>
+    <% if (msg === 'updated') { %> <div class="alert alert-success shadow-sm auto-dismiss-alert"><ion-icon name="checkmark-circle"></ion-icon> Đã cập nhật tài khoản!</div> <% } %>
+    <% if (msg === 'useradded') { %> <div class="alert alert-success shadow-sm auto-dismiss-alert"><ion-icon name="person-add"></ion-icon> Đã tạo người dùng mới!</div> <% } %>
+    <% if (msg === 'userexists') { %> <div class="alert alert-danger shadow-sm auto-dismiss-alert"><ion-icon name="warning"></ion-icon> Tên người dùng đã tồn tại!</div> <% } %>
+    <% if (msg === 'pwchanged') { %> <div class="alert alert-success shadow-sm auto-dismiss-alert"><ion-icon name="checkmark-circle"></ion-icon> Đổi mật khẩu đăng nhập thành công!</div> <% } %>
+    <% if (msg === 'pwchange_err') { %> <div class="alert alert-danger shadow-sm auto-dismiss-alert"><ion-icon name="close-circle"></ion-icon> Mật khẩu cũ không chính xác!</div> <% } %>
+    <% if (msg === 'deleted') { %> <div class="alert alert-warning shadow-sm auto-dismiss-alert"><ion-icon name="trash"></ion-icon> Đã xóa tài khoản!</div> <% } %>
+    <% if (msg === 'user_deleted') { %> <div class="alert alert-warning shadow-sm auto-dismiss-alert"><ion-icon name="trash"></ion-icon> Đã xóa người dùng!</div> <% } %>
+    <% if (msg === 'cant_delete_self') { %> <div class="alert alert-danger shadow-sm auto-dismiss-alert"><ion-icon name="warning"></ion-icon> Bạn không thể tự xóa chính mình!</div> <% } %>
+</div>
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow">
@@ -32,6 +48,7 @@
                 Xin chào, <strong><%= user.username %></strong> 
                 <% if (user.is_admin) { %><span class="badge bg-danger ms-1">Admin</span><% } %>
             </span>
+            <!-- Nút đổi mk outline -->
             <button class="btn btn-outline-info btn-sm me-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#changePwModal">
                 <ion-icon name="key"></ion-icon> Đổi Mật Khẩu
             </button>
@@ -43,26 +60,16 @@
 </nav>
 
 <div class="container">
-    <!-- Messages -->
-    <% if (msg === 'added') { %> <div class="alert alert-success alert-dismissible fade show shadow-sm"><ion-icon name="checkmark-circle"></ion-icon> Đã lưu tài khoản thành công! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
-    <% if (msg === 'updated') { %> <div class="alert alert-success alert-dismissible fade show shadow-sm"><ion-icon name="checkmark-circle"></ion-icon> Đã cập nhật tài khoản! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
-    <% if (msg === 'useradded') { %> <div class="alert alert-success alert-dismissible fade show shadow-sm"><ion-icon name="person-add"></ion-icon> Đã tạo người dùng mới! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
-    <% if (msg === 'userexists') { %> <div class="alert alert-danger alert-dismissible fade show shadow-sm"><ion-icon name="warning"></ion-icon> Tên người dùng đã tồn tại! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
-    <% if (msg === 'pwchanged') { %> <div class="alert alert-success alert-dismissible fade show shadow-sm"><ion-icon name="checkmark-circle"></ion-icon> Đổi mật khẩu đăng nhập thành công! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
-    <% if (msg === 'pwchange_err') { %> <div class="alert alert-danger alert-dismissible fade show shadow-sm"><ion-icon name="close-circle"></ion-icon> Mật khẩu cũ không chính xác! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
-    <% if (msg === 'deleted') { %> <div class="alert alert-warning alert-dismissible fade show shadow-sm"><ion-icon name="trash"></ion-icon> Đã xóa tài khoản! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
-    <% if (msg === 'user_deleted') { %> <div class="alert alert-warning alert-dismissible fade show shadow-sm"><ion-icon name="trash"></ion-icon> Đã xóa người dùng! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
-    <% if (msg === 'cant_delete_self') { %> <div class="alert alert-danger alert-dismissible fade show shadow-sm"><ion-icon name="warning"></ion-icon> Bạn không thể tự xóa chính mình! <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> <% } %>
-
     <!-- Header & Actions -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <h4 class="mb-0 text-secondary fw-bold d-flex align-items-center"><ion-icon name="folder-open" class="me-2"></ion-icon> Kho Tài Khoản</h4>
         <% if (user.is_admin) { %>
         <div>
-            <button class="btn btn-primary shadow-sm fw-semibold" data-bs-toggle="modal" data-bs-target="#addPasswordModal">
+            <!-- Các nút outline -->
+            <button class="btn btn-outline-primary shadow-sm fw-bold border-2" data-bs-toggle="modal" data-bs-target="#addPasswordModal">
                 <ion-icon name="add-circle"></ion-icon> Thêm Tài Khoản
             </button>
-            <button class="btn btn-success shadow-sm ms-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#addUserModal">
+            <button class="btn btn-outline-success shadow-sm ms-2 fw-bold border-2" data-bs-toggle="modal" data-bs-target="#addUserModal">
                 <ion-icon name="people"></ion-icon> Quản lý User
             </button>
         </div>
@@ -151,7 +158,8 @@
               </div>
           </div>
           <div class="modal-footer border-top-0 pt-0">
-            <button type="submit" class="btn btn-info w-100 text-white fw-bold shadow-sm">Xác nhận đổi</button>
+            <!-- Nút outline -->
+            <button type="submit" class="btn btn-outline-info border-2 w-100 fw-bold shadow-sm">Xác nhận đổi</button>
           </div>
       </form>
     </div>
@@ -203,8 +211,8 @@
               </div>
           </div>
           <div class="modal-footer border-top-0 pt-3 mt-2">
-            <button type="button" class="btn btn-light fw-semibold" data-bs-dismiss="modal">Hủy</button>
-            <button type="submit" class="btn btn-<%= config.THEME_COLOR %> px-4 fw-bold shadow-sm"><ion-icon name="save"></ion-icon> Lưu ngay</button>
+            <button type="button" class="btn btn-outline-secondary fw-semibold border-2" data-bs-dismiss="modal">Hủy</button>
+            <button type="submit" class="btn btn-outline-<%= config.THEME_COLOR %> px-4 fw-bold shadow-sm border-2"><ion-icon name="save"></ion-icon> Lưu ngay</button>
           </div>
       </form>
     </div>
@@ -232,7 +240,7 @@
                       <input type="text" name="acc_username" class="form-control bg-body-tertiary" value="<%= p.acc_username %>">
                   </div>
                   <div class="col-md-6 mb-3">
-                      <label class="form-label fw-semibold text-secondary">Mật khẩu mới (Để trống nếu giữ nguyên)</label>
+                      <label class="form-label fw-semibold text-secondary">Mật khẩu mới</label>
                       <input type="text" name="password" class="form-control bg-body-tertiary" placeholder="Bỏ trống = Không đổi">
                   </div>
               </div>
@@ -256,8 +264,8 @@
               </div>
           </div>
           <div class="modal-footer border-top-0 pt-3 mt-2">
-            <button type="button" class="btn btn-light fw-semibold" data-bs-dismiss="modal">Hủy</button>
-            <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm"><ion-icon name="save"></ion-icon> Cập nhật</button>
+            <button type="button" class="btn btn-outline-secondary fw-semibold border-2" data-bs-dismiss="modal">Hủy</button>
+            <button type="submit" class="btn btn-outline-primary px-4 fw-bold shadow-sm border-2"><ion-icon name="save"></ion-icon> Cập nhật</button>
           </div>
       </form>
     </div>
@@ -290,7 +298,7 @@
                           <input type="checkbox" name="is_admin" class="form-check-input border-secondary" id="checkAdmin">
                           <label class="form-check-label text-danger fw-semibold" style="font-size: 0.9em;" for="checkAdmin">Cấp quyền Admin</label>
                       </div>
-                      <button type="submit" class="btn btn-success btn-sm fw-bold px-3 shadow-sm"><ion-icon name="add"></ion-icon> Tạo</button>
+                      <button type="submit" class="btn btn-outline-success btn-sm fw-bold px-3 border-2"><ion-icon name="add"></ion-icon> Tạo</button>
                   </div>
               </form>
           </div>
@@ -323,6 +331,14 @@
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // Ẩn thông báo sau 3 giây
+    setTimeout(() => {
+        document.querySelectorAll('.auto-dismiss-alert').forEach(el => {
+            el.classList.add('fade-out');
+            setTimeout(() => el.remove(), 500); // Đợi CSS transition xong thì xóa DOM
+        });
+    }, 3000);
+
     function togglePassword(id, password) {
         let el = document.getElementById('pw-' + id);
         let btnIcon = document.getElementById('icon-' + id);

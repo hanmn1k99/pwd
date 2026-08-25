@@ -28,7 +28,7 @@
                     <p class="text-muted">Hệ thống quản lý nội bộ</p>
                 </div>
                 <% if (error) { %>
-                    <div class="alert alert-danger py-2" role="alert"><ion-icon name="warning"></ion-icon> <%= error %></div>
+                    <div class="alert alert-danger py-2 auto-dismiss-alert" role="alert"><ion-icon name="warning"></ion-icon> <%= error %></div>
                 <% } %>
                 <form method="POST">
                     <div class="mb-3">
@@ -43,7 +43,8 @@
                         <input class="form-check-input" type="checkbox" name="remember" id="rememberCheck">
                         <label class="form-check-label text-muted" for="rememberCheck">Ghi nhớ đăng nhập (30 ngày)</label>
                     </div>
-                    <button type="submit" class="btn btn-<%= config.THEME_COLOR %> btn-lg w-100 fw-bold shadow-sm"><ion-icon name="log-in"></ion-icon> Đăng nhập</button>
+                    <!-- Đã sửa nút thành outline theo yêu cầu -->
+                    <button type="submit" class="btn btn-outline-<%= config.THEME_COLOR %> btn-lg w-100 fw-bold shadow-sm"><ion-icon name="log-in"></ion-icon> Đăng nhập</button>
                 </form>
             </div>
         </div>
@@ -52,6 +53,15 @@
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <script>
+        // Tự động ẩn thông báo lỗi sau 3 giây
+        setTimeout(() => {
+            document.querySelectorAll('.auto-dismiss-alert').forEach(el => {
+                el.style.transition = 'opacity 0.5s ease';
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 500);
+            });
+        }, 3000);
+
         const htmlEl = document.documentElement;
         const themeBtn = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
