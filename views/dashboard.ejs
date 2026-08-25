@@ -231,14 +231,22 @@
                   <textarea name="notes" class="form-control bg-body-tertiary" rows="2" placeholder="Thông tin thêm..."></textarea>
               </div>
               <div class="mb-3">
-                  <label class="form-label fw-semibold text-secondary">Phân quyền cho User <small class="text-muted fw-normal">(Giữ Ctrl để chọn)</small></label>
-                  <select name="allowed_users" class="form-select bg-body-tertiary" multiple size="3">
+                  <label class="form-label fw-semibold text-secondary d-block">Phân quyền cho User</label>
+                  <div class="bg-body-tertiary border border-secondary-subtle rounded-3 p-2" style="max-height: 120px; overflow-y: auto;">
                       <% allUsers.forEach(u => { %>
                           <% if (u.id !== user.id) { %>
-                          <option value="<%= u.id %>"><%= u.username %></option>
+                          <div class="form-check">
+                              <input class="form-check-input border-secondary" type="checkbox" name="allowed_users" value="<%= u.id %>" id="addUser-<%= u.id %>">
+                              <label class="form-check-label text-body" for="addUser-<%= u.id %>">
+                                  <ion-icon name="person-circle" class="text-secondary align-middle me-1"></ion-icon><%= u.username %>
+                              </label>
+                          </div>
                           <% } %>
                       <% }) %>
-                  </select>
+                      <% if (allUsers.length <= 1) { %>
+                          <small class="text-muted fst-italic">Chưa có user nào khác ngoài bạn.</small>
+                      <% } %>
+                  </div>
               </div>
           </div>
           <div class="modal-footer border-top-0 pt-3 mt-2">
@@ -284,14 +292,22 @@
                   <textarea name="notes" class="form-control bg-body-tertiary" rows="2"><%= p.notes || '' %></textarea>
               </div>
               <div class="mb-3">
-                  <label class="form-label fw-semibold text-secondary">Phân quyền cho User</label>
-                  <select name="allowed_users" class="form-select bg-body-tertiary" multiple size="3">
+                  <label class="form-label fw-semibold text-secondary d-block">Phân quyền cho User</label>
+                  <div class="bg-body-tertiary border border-secondary-subtle rounded-3 p-2" style="max-height: 120px; overflow-y: auto;">
                       <% allUsers.forEach(u => { %>
                           <% if (u.id !== user.id) { %>
-                          <option value="<%= u.id %>" <%= (p.shared_with && p.shared_with.includes(u.username)) ? 'selected' : '' %>><%= u.username %></option>
+                          <div class="form-check">
+                              <input class="form-check-input border-secondary" type="checkbox" name="allowed_users" value="<%= u.id %>" id="editUser-<%= p.id %>-<%= u.id %>" <%= (p.shared_with && p.shared_with.includes(u.username)) ? 'checked' : '' %>>
+                              <label class="form-check-label text-body" for="editUser-<%= p.id %>-<%= u.id %>">
+                                  <ion-icon name="person-circle" class="text-secondary align-middle me-1"></ion-icon><%= u.username %>
+                              </label>
+                          </div>
                           <% } %>
                       <% }) %>
-                  </select>
+                      <% if (allUsers.length <= 1) { %>
+                          <small class="text-muted fst-italic">Chưa có user nào khác ngoài bạn.</small>
+                      <% } %>
+                  </div>
               </div>
           </div>
           <div class="modal-footer border-top-0 pt-3 mt-2">
