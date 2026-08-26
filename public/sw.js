@@ -1,4 +1,4 @@
-const CACHE_NAME = 'passmgn-cache-v3';
+const CACHE_NAME = 'passmgn-cache-v4';
 
 self.addEventListener('install', event => {
   self.skipWaiting();
@@ -8,14 +8,25 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
-        cacheNames.map(cache => caches.delete(cache)) // Xóa SẠCH toàn bộ mọi cache cũ
+        cacheNames.map(cache => caches.delete(cache))
       );
     }).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', event => {
-  // BỎ QUA HOÀN TOÀN TẤT CẢ CÁC REQUEST
-  // Trình duyệt sẽ tự động gọi trực tiếp lên Server như bình thường.
-  // Tuyệt đối không can thiệp, không gây lỗi F5.
+  // Chỉ can thiệp các request GET (để lách luật PWA)
+  if (event.request.method !== 'GET') {
+    return; // Các request POST (Login, Add, Edit, Delete) sẽ bị bỏ qua và do trình duyệt tự xử lý an toàn
+  }
+
+  // Gọi trực tiếp lên Server (Network Only)
+  event.respondWith(
+    fetch(event.request).catch(() => {
+      return new Response('Mất kết nối mạng (Offline mode)', {
+        status: 503,
+        statusText: 'Service Unavailable'
+      });
+    })
+  );
 });
