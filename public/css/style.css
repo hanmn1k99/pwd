@@ -50,6 +50,8 @@ body { background-color: var(--bs-body-bg); transition: background-color 0.3s; }
         
         /* Badges */
         .badge-admin { background-color: #dc3545; color: white; }
-        .badge-user { background-color: #6c757d; color: white; }
+        .badge-user { background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+        .badge-private { background-color: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
         [data-bs-theme="dark"] .badge-admin { background-color: rgba(248,113,113,0.15) !important; color: #f87171 !important; border: 1px solid rgba(248,113,113,0.3); }
         [data-bs-theme="dark"] .badge-user { background-color: rgba(148,163,184,0.1) !important; color: #94a3b8 !important; border: 1px solid rgba(148,163,184,0.3); }
+        [data-bs-theme="dark"] .badge-private { background-color: rgba(255,255,255,0.05) !important; color: #94a3b8 !important; border: 1px solid rgba(255,255,255,0.15); }

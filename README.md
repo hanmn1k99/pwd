@@ -41,30 +41,17 @@ Yêu cầu hệ thống: Máy chủ/VPS chạy Linux (Ubuntu/CentOS), đã cài 
    npm install
    ```
 
-3. **Cấu hình thông tin ban đầu (.env)**
-   Tuyệt đối **KHÔNG** sửa trực tiếp thông tin nhạy cảm vào file `config.js` để tránh lộ mật khẩu khi đẩy lên Git. Hãy tạo một file `.env` ở thư mục gốc:
-   ```bash
-   cp .env.example .env
-   # Hoặc tự tạo file .env và nhập nội dung sau:
-   ```
-   
-   Nội dung file `.env`:
-   ```env
-   SITE_NAME="Kho Mật Khẩu MinhHan"
-   PORT=3333
-   SESSION_SECRET="chuoi-ngau-nhien-cua-ban"
-   THEME_COLOR="primary"
-   
-   ADMIN_USERNAME="han@minhhan.net"
-   ADMIN_PASSWORD="mat_khau_kho_doan"
-   ```
-   *(Lưu ý: File `.env` đã được chặn lưu lên Git qua `.gitignore` nên an toàn 100%)*
-
-4. **Chạy ứng dụng (Khuyên dùng PM2 để chạy ngầm)**
+3. **Khởi động ứng dụng (Khuyên dùng PM2 để chạy ngầm)**
    ```bash
    npm install -g pm2
    pm2 start server.js --name "pwd-mgn"
    ```
+
+4. **Khởi tạo hệ thống (Setup lần đầu)**
+   - Truy cập vào địa chỉ `http://IP-VPS-CỦA-BẠN:3333`.
+   - Hệ thống sẽ tự động chặn và yêu cầu bạn tạo Tài khoản Admin và Mật khẩu đầu tiên.
+   - Nhập thông tin và bấm **Hoàn tất cài đặt**.
+   - (Lưu ý: Màn hình Setup này sẽ vĩnh viễn bị khóa lại sau khi tạo xong Admin đầu tiên để đảm bảo an toàn tuyệt đối).
 
 ---
 
