@@ -260,13 +260,13 @@
               </div>
               <div class="mb-3">
                   <label class="form-label fw-semibold text-secondary d-block">Phân quyền cho User</label>
-                  <div class="bg-body-tertiary border border-secondary-subtle rounded-3 p-2" style="max-height: 120px; overflow-y: auto;">
+                  <div class="bg-body-tertiary border border-secondary-subtle rounded-3 p-3 d-flex flex-wrap gap-2" style="max-height: 120px; overflow-y: auto;">
                       <% allUsers.forEach(u => { %>
                           <% if (u.id !== user.id) { %>
-                          <div class="form-check">
-                              <input class="form-check-input border-secondary" type="checkbox" name="allowed_users" value="<%= u.id %>" id="addUser-<%= u.id %>">
-                              <label class="form-check-label text-body" for="addUser-<%= u.id %>">
-                                  <ion-icon name="person-circle" class="text-secondary align-middle me-1"></ion-icon><%= u.username %>
+                          <div>
+                              <input type="checkbox" class="btn-check" name="allowed_users" value="<%= u.id %>" id="addUser-<%= u.id %>">
+                              <label class="btn btn-outline-secondary rounded-pill btn-sm d-inline-flex align-items-center fw-normal" for="addUser-<%= u.id %>">
+                                  <ion-icon name="person-circle" class="me-1 fs-6"></ion-icon><%= u.username %>
                               </label>
                           </div>
                           <% } %>
@@ -321,13 +321,13 @@
               </div>
               <div class="mb-3">
                   <label class="form-label fw-semibold text-secondary d-block">Phân quyền cho User</label>
-                  <div class="bg-body-tertiary border border-secondary-subtle rounded-3 p-2" style="max-height: 120px; overflow-y: auto;">
+                  <div class="bg-body-tertiary border border-secondary-subtle rounded-3 p-3 d-flex flex-wrap gap-2" style="max-height: 120px; overflow-y: auto;">
                       <% allUsers.forEach(u => { %>
                           <% if (u.id !== user.id) { %>
-                          <div class="form-check">
-                              <input class="form-check-input border-secondary" type="checkbox" name="allowed_users" value="<%= u.id %>" id="editUser-<%= p.id %>-<%= u.id %>" <%= (p.shared_with && p.shared_with.includes(u.username)) ? 'checked' : '' %>>
-                              <label class="form-check-label text-body" for="editUser-<%= p.id %>-<%= u.id %>">
-                                  <ion-icon name="person-circle" class="text-secondary align-middle me-1"></ion-icon><%= u.username %>
+                          <div>
+                              <input type="checkbox" class="btn-check" name="allowed_users" value="<%= u.id %>" id="editUser-<%= p.id %>-<%= u.id %>" <%= (p.shared_with && p.shared_with.includes(u.username)) ? 'checked' : '' %>>
+                              <label class="btn btn-outline-secondary rounded-pill btn-sm d-inline-flex align-items-center fw-normal" for="editUser-<%= p.id %>-<%= u.id %>">
+                                  <ion-icon name="person-circle" class="me-1 fs-6"></ion-icon><%= u.username %>
                               </label>
                           </div>
                           <% } %>
