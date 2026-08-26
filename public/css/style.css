@@ -1,0 +1,55 @@
+body { background-color: var(--bs-body-bg); transition: background-color 0.3s; }
+        
+        .card { transition: all 0.25s ease; border: 1px solid var(--bs-border-color-translucent); }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; }
+        
+        ion-icon { pointer-events: none; vertical-align: text-bottom; margin-right: 4px; font-size: 1.15em; }
+        .btn ion-icon { margin-right: 2px; }
+        .icon-only { margin-right: 0 !important; }
+        
+        .fade-out { transition: opacity 0.5s ease, transform 0.5s ease; opacity: 0; transform: translateY(-20px); }
+        
+        /* Chế độ Dark Mode lấy cảm hứng từ Autobell (Bản tăng cường độ tương phản) */
+        [data-bs-theme="dark"] body { background-color: #0b0f1a; color: #f8fafc; }
+        [data-bs-theme="dark"] .card { 
+            background-color: #1e293b; 
+            border: 1px solid rgba(255,255,255,0.15); 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important;
+        }
+        [data-bs-theme="dark"] .card:hover { 
+            border-color: #60a5fa; 
+            box-shadow: 0 10px 25px rgba(59,130,246,0.2) !important; 
+            transform: translateY(-2px);
+        }
+        [data-bs-theme="dark"] .bg-body-tertiary { background-color: #0f1629 !important; }
+        [data-bs-theme="dark"] .navbar { background-color: #0f1629 !important; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        [data-bs-theme="dark"] .modal-content { background-color: #1e293b; border: 1px solid rgba(255,255,255,0.2); }
+        
+        /* Màu sáng & nổi bật hơn */
+        [data-bs-theme="dark"] .text-primary, [data-bs-theme="dark"] .text-info { color: #60a5fa !important; }
+        [data-bs-theme="dark"] .btn-outline-primary, [data-bs-theme="dark"] .btn-outline-info { color: #60a5fa; border-color: #60a5fa; border-width: 2px; font-weight: 700; }
+        [data-bs-theme="dark"] .btn-outline-primary:hover, [data-bs-theme="dark"] .btn-outline-info:hover { background-color: #60a5fa; color: #000; }
+        
+        [data-bs-theme="dark"] .text-success { color: #34d399 !important; }
+        [data-bs-theme="dark"] .btn-outline-success { color: #34d399; border-color: #34d399; border-width: 2px; font-weight: 700; }
+        [data-bs-theme="dark"] .btn-outline-success:hover { background-color: #34d399; color: #000; }
+        
+        [data-bs-theme="dark"] .text-danger { color: #f87171 !important; }
+        [data-bs-theme="dark"] .btn-outline-danger { color: #f87171; border-color: #f87171; border-width: 2px; font-weight: 700; }
+        [data-bs-theme="dark"] .btn-outline-danger:hover { background-color: #f87171; color: #000; }
+        
+        [data-bs-theme="dark"] .text-secondary { color: #94a3b8 !important; }
+        [data-bs-theme="dark"] .text-muted { color: #94a3b8 !important; }
+        [data-bs-theme="dark"] .border-secondary-subtle { border-color: rgba(255,255,255,0.15) !important; }
+        [data-bs-theme="dark"] .font-monospace { color: #60a5fa !important; font-weight: bold; }
+        
+        /* Tùy chỉnh danh sách (List group) */
+        [data-bs-theme="dark"] .list-group { border-color: rgba(255,255,255,0.15) !important; }
+        [data-bs-theme="dark"] .list-group-item { background-color: #1e293b !important; border-color: rgba(255,255,255,0.1) !important; color: #f8fafc; }
+        [data-bs-theme="dark"] .list-group-item:hover { background-color: rgba(255,255,255,0.05) !important; }
+        
+        /* Badges */
+        .badge-admin { background-color: #dc3545; color: white; }
+        .badge-user { background-color: #6c757d; color: white; }
+        [data-bs-theme="dark"] .badge-admin { background-color: rgba(248,113,113,0.15) !important; color: #f87171 !important; border: 1px solid rgba(248,113,113,0.3); }
+        [data-bs-theme="dark"] .badge-user { background-color: rgba(148,163,184,0.1) !important; color: #94a3b8 !important; border: 1px solid rgba(148,163,184,0.3); }
