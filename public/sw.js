@@ -1,7 +1,6 @@
-const CACHE_NAME = 'passmgn-cache-v2';
+const CACHE_NAME = 'passmgn-cache-v3';
 
 self.addEventListener('install', event => {
-  // Ép SW mới cài đặt đè lên SW cũ ngay lập tức
   self.skipWaiting();
 });
 
@@ -9,26 +8,14 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
-        cacheNames.map(cache => {
-          // Xóa toàn bộ cache cũ đi để tránh lỗi kẹt giao diện HTML
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
-          }
-        })
+        cacheNames.map(cache => caches.delete(cache)) // Xóa SẠCH toàn bộ mọi cache cũ
       );
     }).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', event => {
-  // Kho mật khẩu là ứng dụng động & bảo mật, TUYỆT ĐỐI KHÔNG lấy từ Cache.
-  // Luôn luôn gọi lên Server.
-  event.respondWith(
-    fetch(event.request).catch(() => {
-      return new Response('Mất kết nối mạng (Offline mode)', {
-        status: 503,
-        statusText: 'Service Unavailable'
-      });
-    })
-  );
+  // BỎ QUA HOÀN TOÀN TẤT CẢ CÁC REQUEST
+  // Trình duyệt sẽ tự động gọi trực tiếp lên Server như bình thường.
+  // Tuyệt đối không can thiệp, không gây lỗi F5.
 });
