@@ -51,8 +51,8 @@ Yêu cầu hệ thống: Máy chủ/VPS chạy Linux (Ubuntu/CentOS), đã cài 
        THEME_COLOR: "primary",
        
        // Khai báo tài khoản Admin khởi tạo tại đây
-       ADMIN_USERNAME: "han@minhhan.net",
-       ADMIN_PASSWORD: "Mật_khẩu_của_bạn"
+       ADMIN_USERNAME: "admin@tendomain.com",
+       ADMIN_PASSWORD: "Mật_khẩu_khó_đoán"
    };
    ```
 
