@@ -18,7 +18,8 @@ Hệ thống quản lý mật khẩu cá nhân/đội nhóm nội bộ siêu nh�
 
 ### ✨ Tính năng nổi bật:
 - 🚀 **Kiến trúc SPA siêu mượt:** Mọi thao tác Thêm/Sửa/Xóa đều chạy ẩn qua AJAX, không bao giờ phải reload lại trang.
-- 🎨 **Giao diện Modern Dark Mode:** Thiết kế tinh tế, lấy cảm hứng từ các UI hiện đại nhất hiện nay. Thân thiện với mắt.
+- 📱 **Hỗ trợ PWA (Ứng dụng Web Tiến tiến):** Có thể cài đặt thành một Ứng dụng thực thụ trên Điện thoại (iOS/Android) và Máy tính, hoạt động mượt mà không cần thanh địa chỉ trình duyệt.
+- 🎨 **Giao diện Modern Dark Mode:** Thiết kế tinh tế, lấy cảm hứng từ các UI hiện đại nhất hiện nay. Hỗ trợ chuyển đổi Light/Dark mode thân thiện với mắt.
 - 👥 **Quản lý phân quyền (Role-based):**
   - **Admin:** Có toàn quyền thêm/sửa/xóa, xem được mật khẩu gốc.
   - **User:** Chỉ được phép bấm nút "Copy mật khẩu" (không nhìn thấy ký tự thật) đối với những tài khoản được Admin phân quyền chia sẻ.
@@ -58,10 +59,11 @@ Yêu cầu hệ thống: Máy chủ/VPS chạy Linux (Ubuntu/CentOS), đã cài 
 ## 📖 Hướng dẫn sử dụng (Usage)
 
 - **Truy cập Web:** Mở trình duyệt và truy cập `http://IP-VPS-CỦA-BẠN:3333`
-- **Đăng nhập:** Sử dụng tài khoản và mật khẩu Admin mà bạn đã thiết lập trong `config.js`.
-- **Thêm mật khẩu:** Bấm nút **Thêm mới**, điền tên gợi nhớ, tài khoản, mật khẩu. Bạn có thể chọn chia sẻ mật khẩu này cho các User khác bằng cách click vào các thẻ tên (Badge) tương ứng.
+- **Đăng nhập:** Sử dụng tài khoản và mật khẩu Admin mà bạn đã tạo ở bước Khởi tạo hệ thống (Setup).
+- **Thêm mật khẩu:** Bấm nút **Thêm mới**, điền tên gợi nhớ, tài khoản, mật khẩu. Bạn có thể chọn chia sẻ mật khẩu này cho các User khác bằng cách click vào các thẻ tên tương ứng.
 - **Tạo tài khoản phụ (User):** Admin có thể bấm nút **User** để tạo thêm tài khoản cho nhân viên/thành viên team. Các User này chỉ thấy được những mật khẩu mà bạn đã tick chia sẻ cho họ.
 - **Copy mật khẩu:** Bấm vào biểu tượng Copy 📋 bên cạnh dãy dấu `••••••••` để copy nhanh vào bộ nhớ tạm mà không cần hiển thị mật khẩu.
+- **Xóa dữ liệu (Reset hệ thống):** Nếu muốn làm lại từ đầu, chạy lệnh `bash clear.sh` để xóa toàn bộ Database và cấu hình lại.
 
 ---
 
