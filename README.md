@@ -2,10 +2,10 @@
     
 # 🔐 Node Pass Manager
 
-[![Author](https://img.shields.io/badge/Author-Nguy%E1%BB%85n%20Minh%20H%C3%A2n-blue.svg)](https://minhhan.net)
-[![Email](https://img.shields.io/badge/Email-han%40minhhan.net-red.svg)](mailto:han@minhhan.net)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![NodeJS](https://img.shields.io/badge/Node.js-v14%2B-brightgreen.svg)](https://nodejs.org/)
+[![Author](https://img.shields.io/badge/Author-Nguy%E1%BB%85n%20Minh%20H%C3%A2n-blue.svg?style=for-the-badge)](https://minhhan.net)
+[![Email](https://img.shields.io/badge/Email-han%40minhhan.net-red.svg?style=for-the-badge)](mailto:han@minhhan.net)
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
+[![NodeJS](https://img.shields.io/badge/Node.js-v14%2B-brightgreen.svg?style=for-the-badge)](https://nodejs.org/)
 
 Hệ thống quản lý mật khẩu cá nhân/đội nhóm nội bộ siêu nhẹ, bảo mật cao và giao diện Dark mode hiện đại.
 
