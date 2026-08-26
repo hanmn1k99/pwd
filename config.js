@@ -9,5 +9,9 @@ module.exports = {
     SESSION_SECRET: "minhhan-super-secret-key-2026",
     
     // Màu sắc chủ đạo của nút bấm và logo (Dùng mã màu Bootstrap: primary, dark, success, danger, info)
-    THEME_COLOR: "primary"
+    THEME_COLOR: "primary",
+    
+    // Tài khoản Admin khởi tạo (Sẽ tự động tạo nếu chưa có trong DB)
+    ADMIN_USERNAME: "admin",
+    ADMIN_PASSWORD: "admin123"
 };

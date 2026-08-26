@@ -9,6 +9,7 @@ const config = require('./config');
 
 const app = express();
 app.set('view engine', 'ejs');
+app.use(express.static('public')); // Serve static files
 app.use(express.urlencoded({ extended: true }));
 
 // Truyền config ra toàn bộ giao diện EJS
@@ -73,12 +74,12 @@ db.serialize(() => {
         PRIMARY KEY(user_id, password_id)
     )`);
 
-    // Tạo sẵn tài khoản admin nếu chưa có
-    db.get("SELECT * FROM users WHERE username = 'admin'", (err, row) => {
+    // Tạo sẵn tài khoản admin mặc định từ file config nếu chưa có
+    db.get("SELECT * FROM users WHERE username = ?", [config.ADMIN_USERNAME], (err, row) => {
         if (!row) {
-            const hash = bcrypt.hashSync('admin123', 8);
-            db.run("INSERT INTO users (username, password_hash, is_admin) VALUES (?, ?, ?)", ['admin', hash, 1]);
-            console.log("Đã tạo tài khoản admin mặc định: admin / admin123");
+            const hash = bcrypt.hashSync(config.ADMIN_PASSWORD, 8);
+            db.run("INSERT INTO users (username, password_hash, is_admin) VALUES (?, ?, ?)", [config.ADMIN_USERNAME, hash, 1]);
+            console.log(`Đã tạo tài khoản admin: ${config.ADMIN_USERNAME} / ${config.ADMIN_PASSWORD}`);
         }
     });
 });
