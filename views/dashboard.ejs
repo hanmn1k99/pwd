@@ -41,7 +41,7 @@
                 <ion-icon id="themeIcon" name="moon" class="icon-only"></ion-icon>
             </button>
             <span class="text-light me-3 d-none d-md-inline">
-                Xin chào, <strong><%= user.username %></strong> 
+                Xin chào, <strong><!--email_off--><%= user.username %><!--/email_off--></strong> 
                 <% if (user.is_admin) { %><span class="badge bg-danger ms-1">Admin</span><% } %>
             </span>
             <button class="btn btn-outline-info btn-sm me-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#changePwModal">
