@@ -141,18 +141,27 @@
                                 <% } %>
                             </div>
                         </div>
-                        <div class="mb-3 bg-body-tertiary p-2 rounded">
-                            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.70em; letter-spacing: 1px;"><ion-icon name="person"></ion-icon> Tài khoản</small>
-                            <strong class="text-body fs-6"><%= p.acc_username %></strong>
+                        <div class="mb-3">
+                            <small class="text-muted d-block text-uppercase fw-bold mb-2" style="font-size: 0.70em; letter-spacing: 1px;"><ion-icon name="person"></ion-icon> Tài khoản</small>
+                            <div class="d-flex align-items-center border border-secondary-subtle rounded-3 overflow-hidden bg-body-tertiary">
+                                <strong class="flex-grow-1 px-3 py-2 mb-0 text-body fs-6"><%= p.acc_username %></strong>
+                                <button class="btn btn-link text-secondary text-decoration-none border-0 px-3 border-start border-secondary-subtle rounded-0" type="button" onclick="copyToClipboard('<%= p.acc_username.replace(/'/g, "\\'") %>')" title="Copy tài khoản">
+                                    <ion-icon name="copy" class="icon-only fs-5"></ion-icon>
+                                </button>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <small class="text-muted d-block text-uppercase fw-bold mb-2" style="font-size: 0.70em; letter-spacing: 1px;"><ion-icon name="lock-closed"></ion-icon> Mật khẩu</small>
-                            <!-- Khung chứa mật khẩu đã được làm viền bao quanh toàn bộ -->
                             <div class="d-flex align-items-center border border-secondary-subtle rounded-3 overflow-hidden bg-body-tertiary">
                                 <span class="flex-grow-1 px-3 py-2 mb-0 font-monospace text-body" id="pw-<%= p.id %>" style="font-size: 1.15em; letter-spacing: 2px;">••••••••</span>
-                                <button class="btn btn-link text-secondary text-decoration-none border-0 px-3 border-start border-secondary-subtle rounded-0" type="button" onclick="togglePassword('<%= p.id %>', '<%= p.decrypted.replace(/'/g, "\\'") %>')">
+                                <button class="btn btn-link text-secondary text-decoration-none border-0 px-3 border-start border-secondary-subtle rounded-0" type="button" onclick="copyToClipboard('<%= p.decrypted.replace(/'/g, "\\'") %>')" title="Copy mật khẩu">
+                                    <ion-icon name="copy" class="icon-only fs-5"></ion-icon>
+                                </button>
+                                <% if (user.is_admin) { %>
+                                <button class="btn btn-link text-secondary text-decoration-none border-0 px-3 border-start border-secondary-subtle rounded-0" type="button" onclick="togglePassword('<%= p.id %>', '<%= p.decrypted.replace(/'/g, "\\'") %>')" title="Xem/Ẩn mật khẩu">
                                     <ion-icon name="eye" class="icon-only fs-5" id="icon-<%= p.id %>"></ion-icon>
                                 </button>
+                                <% } %>
                             </div>
                         </div>
                         <% if (p.notes) { %>
@@ -415,6 +424,26 @@
             el.innerText = '••••••••';
             btnIcon.setAttribute('name', 'eye');
         }
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            const toastContainer = document.querySelector('.position-fixed.top-0.end-0');
+            if (toastContainer) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-info shadow-sm auto-dismiss-alert';
+                alertDiv.innerHTML = '<ion-icon name="clipboard"></ion-icon> Đã copy vào bộ nhớ tạm!';
+                alertDiv.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                toastContainer.appendChild(alertDiv);
+                
+                setTimeout(() => {
+                    alertDiv.classList.add('fade-out');
+                    setTimeout(() => alertDiv.remove(), 500);
+                }, 2000);
+            }
+        }).catch(err => {
+            console.error('Copy failed', err);
+        });
     }
 
     const htmlEl = document.documentElement;
