@@ -14,6 +14,6 @@ module.exports = {
     THEME_COLOR: process.env.THEME_COLOR || "primary",
     
     // Đọc tài khoản Admin từ biến môi trường (.env), bảo mật tuyệt đối
-    ADMIN_USERNAME: process.env.ADMIN_USERNAME,
-    ADMIN_PASSWORD: process.env.ADMIN_PASSWORD
+    
+    
 };

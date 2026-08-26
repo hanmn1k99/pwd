@@ -74,21 +74,48 @@ db.serialize(() => {
         PRIMARY KEY(user_id, password_id)
     )`);
 
-    // Tạo sẵn tài khoản admin mặc định từ file config nếu chưa có
-    const adminUser = config.ADMIN_USERNAME || 'admin';
-    db.get("SELECT * FROM users WHERE username = ?", [adminUser], (err, row) => {
-        if (!row) {
-            // Nếu không cấu hình pass trong .env, tạo ngẫu nhiên một pass mạnh
-            const rawPassword = config.ADMIN_PASSWORD || require('crypto').randomBytes(6).toString('hex');
-            const hash = bcrypt.hashSync(rawPassword, 8);
-            db.run("INSERT INTO users (username, password_hash, is_admin) VALUES (?, ?, ?)", [adminUser, hash, 1]);
-            console.log("=========================================");
-            console.log(`🔑 TÀI KHOẢN ADMIN KHỞI TẠO LẦN ĐẦU 🔑`);
-            console.log(`Username: ${adminUser}`);
-            console.log(`Password: ${rawPassword}`);
-            console.log(`(Khuyến cáo: Đăng nhập và đổi mật khẩu ngay hoặc tạo file .env)`);
-            console.log("=========================================");
+    // Cơ chế mới: Sẽ kiểm tra xem DB đã có user nào là admin chưa khi có request
+    // Nếu chưa có, sẽ ép chuyển hướng qua trang /setup
+});
+
+// Middleware kiểm tra xem hệ thống đã được cài đặt chưa (đã có admin chưa)
+function checkSetup(req, res, next) {
+    db.get("SELECT id FROM users WHERE is_admin = 1 LIMIT 1", (err, row) => {
+        if (!row && req.path !== '/setup') {
+            return res.redirect('/setup');
         }
+        if (row && req.path === '/setup') {
+            return res.redirect('/login');
+        }
+        next();
+    });
+}
+
+// Chèn checkSetup vào trước tất cả các route
+app.use((req, res, next) => {
+    // Không áp dụng cho file tĩnh
+    if (req.path.startsWith('/css') || req.path.startsWith('/js')) return next();
+    checkSetup(req, res, next);
+});
+
+app.get('/setup', (req, res) => {
+    res.render('setup', { error: null });
+});
+
+app.post('/setup', (req, res) => {
+    const { username, password, confirm_password } = req.body;
+    
+    if (password !== confirm_password) {
+        return res.render('setup', { error: 'Mật khẩu xác nhận không khớp!' });
+    }
+    if (!username || !password || password.length < 6) {
+        return res.render('setup', { error: 'Tài khoản và mật khẩu (tối thiểu 6 ký tự) không được để trống!' });
+    }
+    
+    const hash = bcrypt.hashSync(password, 8);
+    db.run("INSERT INTO users (username, password_hash, is_admin) VALUES (?, ?, ?)", [username, hash, 1], (err) => {
+        if (err) return res.render('setup', { error: 'Có lỗi xảy ra, vui lòng thử lại!' });
+        res.redirect('/login');
     });
 });
 
