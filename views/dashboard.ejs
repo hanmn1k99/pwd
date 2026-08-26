@@ -175,8 +175,11 @@
                     <div class="card-footer bg-body-tertiary border-top pt-3 pb-3 rounded-bottom-4 mt-auto">
                         <small class="text-muted d-block mb-2 fw-semibold" style="font-size: 0.8em;"><ion-icon name="share-social"></ion-icon> Đã chia sẻ với:</small>
                         <div class="d-flex flex-wrap gap-1">
-                        <% if (p.shared_with && p.shared_with.length > 0) { %>
-                            <% p.shared_with.forEach(u => { %> <span class="badge bg-secondary fw-normal"><%= u %></span> <% }) %>
+                        <% 
+                            let display_shared = p.shared_with ? p.shared_with.filter(name => name !== user.username) : [];
+                        %>
+                        <% if (display_shared.length > 0) { %>
+                            <% display_shared.forEach(u => { %> <span class="badge bg-secondary fw-normal"><%= u %></span> <% }) %>
                         <% } else { %>
                             <span class="badge bg-dark border border-secondary-subtle fw-normal text-secondary"><ion-icon name="lock-closed" class="me-1"></ion-icon>Riêng tư (Chỉ mình tôi)</span>
                         <% } %>
