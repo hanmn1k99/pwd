@@ -171,7 +171,7 @@
                         </div>
                         <% } %>
                     </div>
-                    <% if (user.is_admin && p.shared_with) { %>
+                    <% if (user.is_admin && p.shared_with && p.shared_with.length > 0) { %>
                     <div class="card-footer bg-body-tertiary border-top pt-3 pb-3 rounded-bottom-4">
                         <small class="text-muted d-block mb-2 fw-semibold" style="font-size: 0.8em;"><ion-icon name="share-social"></ion-icon> Đã chia sẻ với:</small>
                         <div class="d-flex flex-wrap gap-1">
