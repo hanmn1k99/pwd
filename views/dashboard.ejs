@@ -75,12 +75,12 @@
                             <div>
                                 <% if (p.url) { %>
                                     <% let fixedUrl = p.url; if (!fixedUrl.startsWith('http://') && !fixedUrl.startsWith('https://')) fixedUrl = 'https://' + fixedUrl; %>
-                                    <a href="<%= fixedUrl %>" target="_blank" class="btn btn-sm btn-outline-secondary border-0" title="Mở đường dẫn"><ion-icon name="open" class="icon-only"></ion-icon></a>
+                                    <a href="<%= fixedUrl %>" target="_blank" class="btn btn-sm btn-outline-secondary border-0" title="Mở đường dẫn"><ion-icon name="open" class="icon-only fs-5"></ion-icon></a>
                                 <% } %>
                                 <% if (user.is_admin) { %>
-                                    <button class="btn btn-sm btn-outline-primary border-0" data-bs-toggle="modal" data-bs-target="#editPasswordModal-<%= p.id %>" title="Sửa"><ion-icon name="create" class="icon-only"></ion-icon></button>
+                                    <button class="btn btn-sm btn-outline-primary border-0" data-bs-toggle="modal" data-bs-target="#editPasswordModal-<%= p.id %>" title="Sửa"><ion-icon name="create" class="icon-only fs-5"></ion-icon></button>
                                     <form action="/delete_password/<%= p.id %>" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa dữ liệu này không?');">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger border-0" title="Xóa"><ion-icon name="trash" class="icon-only"></ion-icon></button>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger border-0" title="Xóa"><ion-icon name="trash" class="icon-only fs-5"></ion-icon></button>
                                     </form>
                                 <% } %>
                             </div>
