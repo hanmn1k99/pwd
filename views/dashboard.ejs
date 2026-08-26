@@ -129,7 +129,7 @@
                                 let display_shared = p.shared_with ? p.shared_with.filter(name => name !== user.username) : [];
                             %>
                             <% if (display_shared.length > 0) { %>
-                                <% display_shared.forEach(u => { %> <span class="badge badge-user rounded-pill fw-normal d-inline-flex align-items-center px-2 py-1"><ion-icon name="person-circle" class="me-1 fs-6"></ion-icon><%= u %></span> <% }) %>
+                                <% display_shared.forEach(u => { %> <span class="badge badge-user rounded-pill fw-normal d-inline-flex align-items-center px-2 py-1"><ion-icon name="person-circle" class="me-1 fs-6"></ion-icon><!--email_off--><%= u %><!--/email_off--></span> <% }) %>
                             <% } else { %>
                                 <span class="badge badge-private rounded-pill fw-normal d-inline-flex align-items-center px-2 py-1"><ion-icon name="lock-closed" class="me-1"></ion-icon>Riêng tư</span>
                             <% } %>
@@ -216,7 +216,7 @@
                           <div>
                               <input type="checkbox" class="btn-check" name="allowed_users" value="<%= u.id %>" id="addUser-<%= u.id %>">
                               <label class="btn btn-outline-secondary rounded-pill btn-sm d-inline-flex align-items-center fw-normal" for="addUser-<%= u.id %>">
-                                  <ion-icon name="person-circle" class="me-1 fs-6"></ion-icon><%= u.username %>
+                                  <ion-icon name="person-circle" class="me-1 fs-6"></ion-icon><!--email_off--><%= u.username %><!--/email_off-->
                               </label>
                           </div>
                           <% } %>
@@ -277,7 +277,7 @@
                           <div>
                               <input type="checkbox" class="btn-check" name="allowed_users" value="<%= u.id %>" id="editUser-<%= p.id %>-<%= u.id %>" <%= (p.shared_with && p.shared_with.includes(u.username)) ? 'checked' : '' %>>
                               <label class="btn btn-outline-secondary rounded-pill btn-sm d-inline-flex align-items-center fw-normal" for="editUser-<%= p.id %>-<%= u.id %>">
-                                  <ion-icon name="person-circle" class="me-1 fs-6"></ion-icon><%= u.username %>
+                                  <ion-icon name="person-circle" class="me-1 fs-6"></ion-icon><!--email_off--><%= u.username %><!--/email_off-->
                               </label>
                           </div>
                           <% } %>
@@ -333,7 +333,7 @@
             <% allUsers.forEach(u => { %>
                 <li class="list-group-item d-flex justify-content-between align-items-center py-2" id="user-item-<%= u.id %>">
                     <div>
-                        <ion-icon name="person-circle" class="text-secondary me-2 fs-5"></ion-icon> <strong style="vertical-align: super;"><%= u.username %></strong>
+                        <ion-icon name="person-circle" class="text-secondary me-2 fs-5"></ion-icon> <strong style="vertical-align: super;"><!--email_off--><%= u.username %><!--/email_off--></strong>
                     </div>
                     <div class="d-flex align-items-center justify-content-end">
                         <% if (u.is_admin) { %>
