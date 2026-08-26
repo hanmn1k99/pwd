@@ -173,16 +173,16 @@
                     </div>
                     <% if (user.is_admin) { %>
                     <div class="card-footer bg-body-tertiary border-top px-4 pt-3 pb-3 rounded-bottom-4 mt-auto">
-                        <small class="text-muted d-block mb-2 fw-semibold" style="font-size: 0.8em;"><ion-icon name="people"></ion-icon> Quyền truy cập:</small>
-                        <div class="d-flex flex-wrap gap-1">
-                        <% 
-                            let display_shared = p.shared_with ? p.shared_with.filter(name => name !== user.username) : [];
-                        %>
-                        <% if (display_shared.length > 0) { %>
-                            <% display_shared.forEach(u => { %> <span class="badge bg-secondary fw-normal"><%= u %></span> <% }) %>
-                        <% } else { %>
-                            <span class="badge bg-dark border border-secondary-subtle fw-normal text-secondary"><ion-icon name="lock-closed" class="me-1"></ion-icon>Riêng tư (Chỉ mình tôi)</span>
-                        <% } %>
+                        <div class="d-flex align-items-center flex-wrap gap-2">
+                            <small class="text-muted fw-semibold mb-0" style="font-size: 0.8em;"><ion-icon name="people" class="me-1"></ion-icon>Quyền truy cập:</small>
+                            <% 
+                                let display_shared = p.shared_with ? p.shared_with.filter(name => name !== user.username) : [];
+                            %>
+                            <% if (display_shared.length > 0) { %>
+                                <% display_shared.forEach(u => { %> <span class="badge bg-secondary fw-normal"><%= u %></span> <% }) %>
+                            <% } else { %>
+                                <span class="badge bg-dark border border-secondary-subtle fw-normal text-secondary"><ion-icon name="lock-closed" class="me-1"></ion-icon>Riêng tư</span>
+                            <% } %>
                         </div>
                     </div>
                     <% } %>
