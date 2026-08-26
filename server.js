@@ -75,11 +75,19 @@ db.serialize(() => {
     )`);
 
     // Tạo sẵn tài khoản admin mặc định từ file config nếu chưa có
-    db.get("SELECT * FROM users WHERE username = ?", [config.ADMIN_USERNAME], (err, row) => {
+    const adminUser = config.ADMIN_USERNAME || 'admin';
+    db.get("SELECT * FROM users WHERE username = ?", [adminUser], (err, row) => {
         if (!row) {
-            const hash = bcrypt.hashSync(config.ADMIN_PASSWORD, 8);
-            db.run("INSERT INTO users (username, password_hash, is_admin) VALUES (?, ?, ?)", [config.ADMIN_USERNAME, hash, 1]);
-            console.log(`Đã tạo tài khoản admin: ${config.ADMIN_USERNAME} / ${config.ADMIN_PASSWORD}`);
+            // Nếu không cấu hình pass trong .env, tạo ngẫu nhiên một pass mạnh
+            const rawPassword = config.ADMIN_PASSWORD || require('crypto').randomBytes(6).toString('hex');
+            const hash = bcrypt.hashSync(rawPassword, 8);
+            db.run("INSERT INTO users (username, password_hash, is_admin) VALUES (?, ?, ?)", [adminUser, hash, 1]);
+            console.log("=========================================");
+            console.log(`🔑 TÀI KHOẢN ADMIN KHỞI TẠO LẦN ĐẦU 🔑`);
+            console.log(`Username: ${adminUser}`);
+            console.log(`Password: ${rawPassword}`);
+            console.log(`(Khuyến cáo: Đăng nhập và đổi mật khẩu ngay hoặc tạo file .env)`);
+            console.log("=========================================");
         }
     });
 });
