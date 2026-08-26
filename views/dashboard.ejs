@@ -179,7 +179,7 @@
                                 let display_shared = p.shared_with ? p.shared_with.filter(name => name !== user.username) : [];
                             %>
                             <% if (display_shared.length > 0) { %>
-                                <% display_shared.forEach(u => { %> <span class="badge badge-user rounded-pill fw-normal d-inline-flex align-items-center px-2 py-1"><%= u %></span> <% }) %>
+                                <% display_shared.forEach(u => { %> <span class="badge badge-user rounded-pill fw-normal d-inline-flex align-items-center px-2 py-1"><ion-icon name="person-circle" class="me-1 fs-6"></ion-icon><%= u %></span> <% }) %>
                             <% } else { %>
                                 <span class="badge bg-dark border border-secondary-subtle rounded-pill fw-normal text-secondary d-inline-flex align-items-center px-2 py-1"><ion-icon name="lock-closed" class="me-1"></ion-icon>Riêng tư</span>
                             <% } %>
