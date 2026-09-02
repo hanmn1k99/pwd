@@ -119,9 +119,6 @@
                     // Cập nhật lại toàn bộ nội dung HTML
                     document.body.innerHTML = doc.body.innerHTML;
                     
-                    // Hiển thị thông báo thành công
-                    showToast('Đã lưu dữ liệu thành công!');
-                    
                     // Kích hoạt lại bộ hẹn giờ tự động tắt thông báo từ Server
                     initAutoDismiss();
                 }, 350);
