@@ -1,9 +1,13 @@
-setTimeout(() => {
-        document.querySelectorAll('.auto-dismiss-alert').forEach(el => {
-            el.classList.add('fade-out');
-            setTimeout(() => el.remove(), 500); 
-        });
-    }, 3000);
+    function initAutoDismiss() {
+        setTimeout(() => {
+            document.querySelectorAll('.auto-dismiss-alert').forEach(el => {
+                el.classList.add('fade-out');
+                setTimeout(() => el.remove(), 500); 
+            });
+        }, 3000);
+    }
+    
+    initAutoDismiss();
 
     function togglePassword(id, password) {
         let el = document.getElementById('pw-' + id);
@@ -117,6 +121,9 @@ setTimeout(() => {
                     
                     // Hiển thị thông báo thành công
                     showToast('Đã lưu dữ liệu thành công!');
+                    
+                    // Kích hoạt lại bộ hẹn giờ tự động tắt thông báo từ Server
+                    initAutoDismiss();
                 }, 350);
             }).catch(err => {
                 console.error(err);
