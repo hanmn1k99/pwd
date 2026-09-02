@@ -1,69 +1,71 @@
 <div align="center">
     
-# 🔐 Node Pass Manager
+# 🔐 Kho Mật Khẩu MinhHan (Node Pass Manager)
 
 [![Author](https://img.shields.io/badge/Author-Nguy%E1%BB%85n%20Minh%20H%C3%A2n-blue.svg?style=for-the-badge)](https://minhhan.net)
 [![Email](https://img.shields.io/badge/Email-han%40minhhan.net-red.svg?style=for-the-badge)](mailto:han@minhhan.net)
-[![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
-[![NodeJS](https://img.shields.io/badge/Node.js-v14%2B-brightgreen.svg?style=for-the-badge)](https://nodejs.org/)
+[![Version](https://img.shields.io/badge/Version-2.1.0-orange.svg?style=for-the-badge)](https://github.com/hanmn1k99/pwd)
+[![NodeJS](https://img.shields.io/badge/Node.js-v18%2B-brightgreen.svg?style=for-the-badge)](https://nodejs.org/)
 
-Hệ thống quản lý mật khẩu cá nhân/đội nhóm nội bộ siêu nhẹ, bảo mật cao và giao diện Dark mode hiện đại.
+Hệ thống quản lý mật khẩu cá nhân/đội nhóm nội bộ siêu nhẹ, bảo mật cao, giao diện Dark mode hiện đại chuẩn SPA.
 
 </div>
 
 ---
 
 ## 🎯 Giới thiệu
-**Node Pass Manager** (hay Kho Mật Khẩu MinhHan) là một hệ thống tự host (Self-hosted) giúp bạn lưu trữ và quản lý hàng trăm mật khẩu của các nền tảng khác nhau một cách an toàn. Đặc biệt phù hợp cho cá nhân hoặc các đội nhóm cần chia sẻ mật khẩu nội bộ mà không muốn bị lộ mật khẩu gốc.
+**Kho Mật Khẩu MinhHan** (Node Pass Manager) là một hệ thống tự lưu trữ (Self-hosted) giúp bạn quản lý hàng trăm mật khẩu một cách an toàn nhất. Đặc biệt phù hợp cho các doanh nghiệp, đội nhóm cần chia sẻ quyền truy cập tài khoản nội bộ mà không muốn bị lộ mật khẩu gốc.
 
-### ✨ Tính năng nổi bật:
-- 🚀 **Kiến trúc SPA siêu mượt:** Mọi thao tác Thêm/Sửa/Xóa đều chạy ẩn qua AJAX, không bao giờ phải reload lại trang.
-- 📱 **Hỗ trợ PWA (Ứng dụng Web Tiến tiến):** Có thể cài đặt thành một Ứng dụng thực thụ trên Điện thoại (iOS/Android) và Máy tính, hoạt động mượt mà không cần thanh địa chỉ trình duyệt.
-- 🎨 **Giao diện Modern Dark Mode:** Thiết kế tinh tế, lấy cảm hứng từ các UI hiện đại nhất hiện nay. Hỗ trợ chuyển đổi Light/Dark mode thân thiện với mắt.
-- 👥 **Quản lý phân quyền (Role-based):**
-  - **Admin:** Có toàn quyền thêm/sửa/xóa, xem được mật khẩu gốc.
-  - **User:** Chỉ được phép bấm nút "Copy mật khẩu" (không nhìn thấy ký tự thật) đối với những tài khoản được Admin phân quyền chia sẻ.
-- 🔒 **Bảo mật kép:** Mật khẩu lưu vào Database được mã hóa AES-256. Mật khẩu đăng nhập Web được băm (Hash) bằng Bcrypt.
+### 🚀 Tính năng nổi bật:
+- ⚡ **Kiến trúc SPA (Single Page Application) mượt mà:** Mọi thao tác Thêm/Sửa/Xóa đều chạy ngầm qua AJAX. Giao diện thay đổi tức thì mà không bao giờ phải tải lại trang. Các thông báo hệ thống tự động trượt ẩn đi cực kỳ tinh tế.
+- 📱 **PWA (Tiêu chuẩn Ứng dụng Web) & Caching:** Tích hợp sẵn Service Worker thông minh (Network-first), không lưu cache bậy bạ gây lỗi F5. Có thể cài đặt thành một Ứng dụng thực thụ trên điện thoại (iOS/Android) hoặc Desktop.
+- 🎨 **Giao diện Modern UI:** Hỗ trợ chuyển đổi tự động Light/Dark Mode thân thiện với mắt. Thanh Navbar tùy biến hiển thị logo ngang sắc nét thay cho text đơn điệu.
+- 🛡️ **Quản lý phân quyền nghiêm ngặt (Role-based):**
+  - **Admin:** Toàn quyền hệ thống, xem mật khẩu gốc, quản lý User.
+  - **User:** Chỉ được cấp nút "Copy mật khẩu" (ẩn hoàn toàn các ký tự mật khẩu thực sự). Chỉ nhìn thấy những tài khoản mà Admin chủ động "share".
+- 🔒 **Bảo mật kép (Double Security):** Mật khẩu lưu vào SQLite được mã hóa chuẩn **AES-256**. Mật khẩu đăng nhập Web được băm bằng **Bcrypt**. Hỗ trợ ẩn IP/Email qua Cloudflare Proxy cực an toàn.
 
 ---
 
-## 🛠️ Hướng dẫn cài đặt (Installation)
+## ⚙️ Hướng dẫn cài đặt (Installation)
 
 Yêu cầu hệ thống: Máy chủ/VPS chạy Linux (Ubuntu/CentOS), đã cài đặt Node.js và NPM.
 
-1. **Clone mã nguồn về máy**
-   ```bash
-   git clone https://github.com/hanmn1k99/pwd.git
-   cd pwd
-   ```
+### 1. Triển khai mã nguồn
+```bash
+git clone https://github.com/hanmn1k99/pwd.git
+cd pwd
+npm install
+```
 
-2. **Cài đặt thư viện**
-   ```bash
-   npm install
-   ```
+### 2. Khởi động hệ thống (Khuyên dùng PM2)
+```bash
+npm install -g pm2
+pm2 start server.js --name "pwd-mgn"
+pm2 save
+```
+*(Lệnh `pm2 save` đảm bảo hệ thống tự động khởi động lại mỗi khi VPS bị sập nguồn).*
 
-3. **Khởi động ứng dụng (Khuyên dùng PM2 để chạy ngầm)**
-   ```bash
-   npm install -g pm2
-   pm2 start server.js --name "pwd-mgn"
-   ```
-
-4. **Khởi tạo hệ thống (Setup lần đầu)**
-   - Truy cập vào địa chỉ `http://IP-VPS-CỦA-BẠN:3333`.
-   - Hệ thống sẽ tự động chặn và yêu cầu bạn tạo Tài khoản Admin và Mật khẩu đầu tiên.
-   - Nhập thông tin và bấm **Hoàn tất cài đặt**.
-   - (Lưu ý: Màn hình Setup này sẽ vĩnh viễn bị khóa lại sau khi tạo xong Admin đầu tiên để đảm bảo an toàn tuyệt đối).
+### 3. Thiết lập hệ thống lần đầu (First-time Setup)
+- Truy cập vào địa chỉ `http://IP-VPS-CỦA-BẠN:3333`.
+- Giao diện **Setup** sẽ tự động kích hoạt. Bạn chỉ cần điền **Tài khoản & Mật khẩu Admin** đầu tiên.
+- Bấm **Hoàn tất**. Màn hình Setup này sẽ vĩnh viễn khóa lại để ngăn chặn kẻ gian xâm nhập tái thiết lập.
 
 ---
 
-## 📖 Hướng dẫn sử dụng (Usage)
+## 📖 Hướng dẫn sử dụng & Mẹo (Tips)
 
-- **Truy cập Web:** Mở trình duyệt và truy cập `http://IP-VPS-CỦA-BẠN:3333`
-- **Đăng nhập:** Sử dụng tài khoản và mật khẩu Admin mà bạn đã tạo ở bước Khởi tạo hệ thống (Setup).
-- **Thêm mật khẩu:** Bấm nút **Thêm mới**, điền tên gợi nhớ, tài khoản, mật khẩu. Bạn có thể chọn chia sẻ mật khẩu này cho các User khác bằng cách click vào các thẻ tên tương ứng.
-- **Tạo tài khoản phụ (User):** Admin có thể bấm nút **User** để tạo thêm tài khoản cho nhân viên/thành viên team. Các User này chỉ thấy được những mật khẩu mà bạn đã tick chia sẻ cho họ.
-- **Copy mật khẩu:** Bấm vào biểu tượng Copy 📋 bên cạnh dãy dấu `••••••••` để copy nhanh vào bộ nhớ tạm mà không cần hiển thị mật khẩu.
-- **Xóa dữ liệu (Reset hệ thống):** Nếu muốn làm lại từ đầu, chạy lệnh `bash clear.sh` để xóa toàn bộ Database và cấu hình lại.
+- **Chia sẻ mật khẩu an toàn:** Khi Thêm mới 1 tài khoản (ví dụ: Tài khoản Netflix), hãy tick vào tên những User (Nhân viên) mà bạn muốn cho dùng chung. Họ vào web chỉ thấy nút COPY chứ không thấy chữ.
+- **Tính năng Cập nhật thần tốc:** Khi có bản cập nhật tính năng mới trên Github, chỉ cần gõ 1 lệnh duy nhất trên VPS:
+  ```bash
+  bash update.sh
+  ```
+  Hệ thống sẽ tự động Pull code, cập nhật thư viện và khởi động lại ngầm, dữ liệu cũ của bạn **không bao giờ bị mất**. *(Lưu ý: Luôn bấm `Ctrl + F5` ở trình duyệt để xóa Cache giao diện).*
+- **Reset hệ thống:** Nếu muốn xóa sạch sành sanh làm lại từ đầu (Factory Reset), chỉ cần gõ:
+  ```bash
+  bash clear.sh
+  ```
+- **Lỗi không đăng nhập được (Cache Loop):** Nếu gặp lỗi `ERR_FAILED` hoặc vòng lặp đăng nhập, hãy ấn `Ctrl + F5` hoặc xóa Cache/Service Worker trên trình duyệt để giải phóng phiên làm việc cũ.
 
 ---
 
@@ -74,4 +76,4 @@ Dự án được thiết kế và phát triển bởi:
 - **Website:** [minhhan.net](https://minhhan.net)
 - **Email:** [han@minhhan.net](mailto:han@minhhan.net)
 
-Nếu thấy dự án hữu ích, đừng quên cho mình 1 ⭐ trên Github nhé!
+⭐ *Nếu thấy dự án hữu ích, đừng quên cho mình 1 sao trên Github nhé!*
