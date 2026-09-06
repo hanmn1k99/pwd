@@ -36,5 +36,9 @@ jobs:
           fi
           
           curl -H "Content-Type: application/json" \
-               -d '{"content": "'"$EMOJI"' Deploy Kho Mật Khẩu lên VPS '$TEXT'!\n- **Người thực hiện:** ${{ github.actor }}\n- **Link kiểm tra:** https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}' \
+               -d '{
+                 "username": "Bot Cập Nhật - Kho Mật Khẩu",
+                 "avatar_url": "https://minhhan.net/wp-content/uploads/2026/09/cropped-Asset-6.png",
+                 "content": "'"$EMOJI"' Đã chạy tự động cài đặt Code mới lên VPS '$TEXT'!\n- **Dự án:** `${{ github.repository }}`\n- **Người thực hiện:** `${{ github.actor }}`\n- **Link kiểm tra:** https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+               }' \
                https://discordapp.com/api/webhooks/1546123810598551652/jFaAxDkyq4cqywUtiw8MJnK_QUt_TBzUjPVc9BpaNvdxMjY4IB0u9v9UVxuam7DYqkKu
