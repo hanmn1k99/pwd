@@ -26,19 +26,21 @@ jobs:
       - name: Discord Notification
         if: always()
         run: |
-          STATUS="${{ job.status }}"
-          if [ "$STATUS" = "success" ]; then
-            EMOJI="✅"
-            TEXT="**THÀNH CÔNG**"
+          if [ "${{ job.status }}" = "success" ]; then
+            COLOR=3066993
+            TITLE="✅ Trạng thái Deploy"
           else
-            EMOJI="❌"
-            TEXT="**THẤT BẠI**"
+            COLOR=15158332
+            TITLE="❌ Trạng thái Deploy"
           fi
           
           curl -H "Content-Type: application/json" \
                -d '{
-                 "username": "Bot Cập Nhật - Kho Mật Khẩu",
-                 "avatar_url": "https://minhhan.net/wp-content/uploads/2026/09/cropped-Asset-6.png",
-                 "content": "'"$EMOJI"' Đã chạy tự động cài đặt Code mới lên VPS '$TEXT'!\n- **Dự án:** `${{ github.repository }}`\n- **Người thực hiện:** `${{ github.actor }}`\n- **Link kiểm tra:** https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                 "username": "${{ github.repository }} (CI/CD)",
+                 "embeds": [{
+                   "title": "'"$TITLE"'",
+                   "color": '"$COLOR"',
+                   "description": "Dự án: **${{ github.repository }}**\nKết quả: **${{ job.status }}**\nCommit: `${{ github.sha }}`\nThực hiện bởi: **${{ github.actor }}**"
+                 }]
                }' \
                https://discordapp.com/api/webhooks/1546123810598551652/jFaAxDkyq4cqywUtiw8MJnK_QUt_TBzUjPVc9BpaNvdxMjY4IB0u9v9UVxuam7DYqkKu
