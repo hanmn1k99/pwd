@@ -40,13 +40,16 @@ jobs:
             --arg username "${{ github.repository }} (CI/CD)" \
             --arg title "$TITLE" \
             --argjson color "$COLOR" \
-            --arg desc "Dự án: **${{ github.repository }}**\nKết quả: **${{ job.status }}**\nNội dung: **$COMMIT_MSG**\nThực hiện bởi: **${{ github.actor }}**" \
+            --arg repo "${{ github.repository }}" \
+            --arg status "${{ job.status }}" \
+            --arg commit "$COMMIT_MSG" \
+            --arg actor "${{ github.actor }}" \
             '{
               username: $username,
               embeds: [{
                 title: $title,
                 color: $color,
-                description: $desc
+                description: ("Dự án: **" + $repo + "**\nKết quả: **" + $status + "**\nNội dung: **" + $commit + "**\nThực hiện bởi: **" + $actor + "**")
               }]
             }')
           
