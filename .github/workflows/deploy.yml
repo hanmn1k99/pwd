@@ -1,4 +1,4 @@
-name: Deploy to VPS
+name: CI/CD Pipeline
 
 on:
   push:
@@ -6,13 +6,46 @@ on:
       - main
 
 jobs:
-  deploy:
+  build:
+    name: Build & Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Deploy via SSH
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Cài đặt thư viện (Install Dependencies)
+        run: npm ci
+
+      - name: Kiểm tra cú pháp (Syntax Lint)
+        run: node -c server.js
+
+  deploy:
+    name: Deploy to VPS
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Truyền Code lên VPS qua SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: 3232
+          source: "."
+          target: "/home/minhhan/pwd"
+          rm: false
+          exclude: ".git,.github,node_modules,database.db,secret.key,.env,update.sh,clear.sh,README.md"
+
+      - name: Cài đặt thư viện Production & Khởi động lại
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -21,7 +54,8 @@ jobs:
           port: 3232
           script: |
             cd /home/minhhan/pwd
-            bash update.sh
+            npm ci --production
+            pm2 restart pwd-mgn
 
       - name: Discord Notification
         if: always()
@@ -30,10 +64,10 @@ jobs:
         run: |
           if [ "${{ job.status }}" = "success" ]; then
             COLOR=3066993
-            TITLE="✅ Trạng thái Deploy"
+            TITLE="✅ Trạng thái Deploy (CI/CD Hoàn chỉnh)"
           else
             COLOR=15158332
-            TITLE="❌ Trạng thái Deploy"
+            TITLE="❌ Trạng thái Deploy (Lỗi CI/CD)"
           fi
           
           JSON_PAYLOAD=$(jq -n \
@@ -46,6 +80,7 @@ jobs:
             --arg actor "${{ github.actor }}" \
             '{
               username: $username,
+              avatar_url: "https://minhhan.net/wp-content/uploads/2026/09/cropped-Asset-6.png",
               embeds: [{
                 title: $title,
                 color: $color,
