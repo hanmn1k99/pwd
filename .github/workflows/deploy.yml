@@ -25,6 +25,8 @@ jobs:
 
       - name: Discord Notification
         if: always()
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
           if [ "${{ job.status }}" = "success" ]; then
             COLOR=3066993
@@ -34,13 +36,18 @@ jobs:
             TITLE="❌ Trạng thái Deploy"
           fi
           
-          curl -H "Content-Type: application/json" \
-               -d '{
-                 "username": "${{ github.repository }} (CI/CD)",
-                 "embeds": [{
-                   "title": "'"$TITLE"'",
-                   "color": '"$COLOR"',
-                   "description": "Dự án: **${{ github.repository }}**\nKết quả: **${{ job.status }}**\nCommit: `${{ github.sha }}`\nThực hiện bởi: **${{ github.actor }}**"
-                 }]
-               }' \
-               https://discordapp.com/api/webhooks/1546123810598551652/jFaAxDkyq4cqywUtiw8MJnK_QUt_TBzUjPVc9BpaNvdxMjY4IB0u9v9UVxuam7DYqkKu
+          JSON_PAYLOAD=$(jq -n \
+            --arg username "${{ github.repository }} (CI/CD)" \
+            --arg title "$TITLE" \
+            --argjson color "$COLOR" \
+            --arg desc "Dự án: **${{ github.repository }}**\nKết quả: **${{ job.status }}**\nNội dung: **$COMMIT_MSG**\nThực hiện bởi: **${{ github.actor }}**" \
+            '{
+              username: $username,
+              embeds: [{
+                title: $title,
+                color: $color,
+                description: $desc
+              }]
+            }')
+          
+          curl -H "Content-Type: application/json" -d "$JSON_PAYLOAD" https://discordapp.com/api/webhooks/1546123810598551652/jFaAxDkyq4cqywUtiw8MJnK_QUt_TBzUjPVc9BpaNvdxMjY4IB0u9v9UVxuam7DYqkKu
