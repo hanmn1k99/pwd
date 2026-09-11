@@ -80,8 +80,14 @@
                             <h5 class="card-title text-<%= config.THEME_COLOR %> fw-bold mb-0"><%= p.title %></h5>
                             <div>
                                 <% if (p.url) { %>
-                                    <% let fixedUrl = p.url; if (!fixedUrl.startsWith('http://') && !fixedUrl.startsWith('https://')) fixedUrl = 'https://' + fixedUrl; %>
-                                    <a href="<%= fixedUrl %>" target="_blank" class="btn btn-sm btn-outline-secondary border-0" title="Mở đường dẫn"><ion-icon name="open" class="icon-only fs-5"></ion-icon></a>
+                                    <% 
+                                      let urls = p.url.split(/[,;\s\n]+/).filter(u => u.trim() !== '');
+                                      urls.forEach(u => {
+                                        let fixedUrl = u.trim();
+                                        if (!fixedUrl.startsWith('http://') && !fixedUrl.startsWith('https://')) fixedUrl = 'http://' + fixedUrl;
+                                    %>
+                                    <a href="<%= fixedUrl %>" target="_blank" class="btn btn-sm btn-outline-secondary border-0" title="<%= fixedUrl %>"><ion-icon name="open" class="icon-only fs-5"></ion-icon></a>
+                                    <% }); %>
                                 <% } %>
                                 <% if (user.is_admin) { %>
                                     <button class="btn btn-sm btn-outline-primary border-0" data-bs-toggle="modal" data-bs-target="#editPasswordModal-<%= p.id %>" title="Sửa"><ion-icon name="create" class="icon-only fs-5"></ion-icon></button>
@@ -202,7 +208,7 @@
               </div>
               <div class="mb-3">
                   <label class="form-label fw-semibold text-secondary">Đường dẫn (URL)</label>
-                  <input type="text" name="url" class="form-control bg-body-tertiary" placeholder="abc.xyz hoặc https://abc.xyz">
+                  <input type="text" name="url" class="form-control bg-body-tertiary" placeholder="abc.com, xyz.net, http://lan.local">
               </div>
               <div class="mb-3">
                   <label class="form-label fw-semibold text-secondary">Ghi chú</label>
