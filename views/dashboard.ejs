@@ -248,8 +248,8 @@
                   </div>
                   <div id="link-container-new">
                       <div class="input-group mb-2 link-row">
-                          <input type="text" class="form-control bg-body-tertiary link-name" placeholder="Tên (VD: Camera 1)">
-                          <input type="text" class="form-control bg-body-tertiary link-url" placeholder="Link (VD: 192.168.1.1)">
+                          <input type="text" class="form-control bg-body-tertiary link-name" placeholder="Tên">
+                          <input type="text" class="form-control bg-body-tertiary link-url" placeholder="Link">
                           <button class="btn btn-outline-danger btn-remove-link" type="button" onclick="this.parentElement.remove()"><ion-icon name="trash" class="d-flex"></ion-icon></button>
                       </div>
                   </div>
@@ -349,14 +349,14 @@
                                   rowUrl = rowUrl.replace(/^https?:\/\//i, '');
                       %>
                       <div class="input-group mb-2 link-row">
-                          <input type="text" class="form-control bg-body-tertiary link-name" placeholder="Tên (VD: Camera 1)" value="<%= rowName %>">
-                          <input type="text" class="form-control bg-body-tertiary link-url" placeholder="Link (VD: 192.168.1.1)" value="<%= rowUrl %>">
+                          <input type="text" class="form-control bg-body-tertiary link-name" placeholder="Tên" value="<%= rowName %>">
+                          <input type="text" class="form-control bg-body-tertiary link-url" placeholder="Link" value="<%= rowUrl %>">
                           <button class="btn btn-outline-danger btn-remove-link" type="button" onclick="this.parentElement.remove()"><ion-icon name="trash" class="d-flex"></ion-icon></button>
                       </div>
                       <% }); } else { %>
                       <div class="input-group mb-2 link-row">
-                          <input type="text" class="form-control bg-body-tertiary link-name" placeholder="Tên (VD: Camera 1)">
-                          <input type="text" class="form-control bg-body-tertiary link-url" placeholder="Link (VD: 192.168.1.1)">
+                          <input type="text" class="form-control bg-body-tertiary link-name" placeholder="Tên">
+                          <input type="text" class="form-control bg-body-tertiary link-url" placeholder="Link">
                           <button class="btn btn-outline-danger btn-remove-link" type="button" onclick="this.parentElement.remove()"><ion-icon name="trash" class="d-flex"></ion-icon></button>
                       </div>
                       <% } %>
@@ -474,8 +474,8 @@
             const container = document.getElementById('link-container-' + id);
             const html = `
                 <div class="input-group mb-2 link-row">
-                    <input type="text" class="form-control bg-body-tertiary link-name" placeholder="Tên (VD: Camera 1)">
-                    <input type="text" class="form-control bg-body-tertiary link-url" placeholder="Link (VD: 192.168.1.1)">
+                    <input type="text" class="form-control bg-body-tertiary link-name" placeholder="Tên">
+                    <input type="text" class="form-control bg-body-tertiary link-url" placeholder="Link">
                     <button class="btn btn-outline-danger btn-remove-link" type="button" onclick="this.parentElement.remove()"><ion-icon name="trash" class="d-flex"></ion-icon></button>
                 </div>
             `;
