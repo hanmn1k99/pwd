@@ -13,6 +13,15 @@
     <link rel="apple-touch-icon" href="/icon.png">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#0d6efd">
+    <style>
+        .hover-primary:hover {
+            background-color: var(--bs-primary) !important;
+            color: #fff !important;
+            border-color: var(--bs-primary) !important;
+            transform: scale(1.05);
+            transition: all 0.2s;
+        }
+    </style>
 </head>
 <body>
 
@@ -111,7 +120,7 @@
                             </div>
                         </div>
                         <% if (p.url) { %>
-                        <div class="mb-3 d-flex flex-wrap gap-2">
+                        <div class="mb-3 d-flex flex-wrap gap-1">
                             <% 
                               let items = p.url.split(/[,;\n]+/).filter(u => u.trim() !== '');
                               items.forEach(item => {
@@ -134,7 +143,7 @@
                                     }
                                 } else {
                                     rawUrl = item.trim();
-                                    name = rawUrl.replace(/^https?:\/\//i, ''); // Ẩn chữ http:// cho đẹp
+                                    name = rawUrl.replace(/^https?:\/\//i, '');
                                 }
                                 
                                 let fixedUrl = rawUrl;
@@ -142,8 +151,8 @@
                                     fixedUrl = 'http://' + fixedUrl;
                                 }
                             %>
-                            <a href="<%= fixedUrl %>" target="_blank" class="badge rounded-pill text-bg-secondary text-decoration-none d-flex align-items-center py-2 px-3 shadow-sm border border-secondary-subtle" style="font-size: 0.85em; transition: all 0.2s;">
-                                <ion-icon name="open-outline" class="me-1"></ion-icon> <%= name %>
+                            <a href="<%= fixedUrl %>" target="_blank" class="badge bg-body-secondary text-secondary text-decoration-none d-inline-flex align-items-center py-1 px-2 border border-secondary-subtle fw-medium rounded-pill hover-primary" style="font-size: 0.75em;">
+                                <ion-icon name="link-outline" class="me-1"></ion-icon> <%= name %>
                             </a>
                             <% }); %>
                         </div>
