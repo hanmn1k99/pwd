@@ -202,7 +202,6 @@ app.post('/add_password', requireLogin, (req, res) => {
     if (!req.session.user.is_admin) return res.status(403).send("Forbidden");
     
     let { title, acc_username, password, url, notes, allowed_users } = req.body;
-    if (url && !url.startsWith('http://') && !url.startsWith('https://')) url = 'https://' + url;
     
     const enc = encrypt(password);
     
@@ -272,7 +271,6 @@ app.post('/edit_password/:id', requireLogin, (req, res) => {
     if (!req.session.user.is_admin) return res.status(403).send("Forbidden");
     let { title, acc_username, password, url, notes, allowed_users } = req.body;
     
-    if (url && !url.startsWith('http://') && !url.startsWith('https://')) url = 'https://' + url;
     
     db.run(`UPDATE passwords SET title=?, acc_username=?, url=?, notes=? WHERE id=?`, 
         [title, acc_username, url, notes, req.params.id], (err) => {
