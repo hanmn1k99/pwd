@@ -115,9 +115,28 @@
                             <% 
                               let items = p.url.split(/[,;\n]+/).filter(u => u.trim() !== '');
                               items.forEach(item => {
-                                let parts = item.split('|');
-                                let name = parts[0].trim();
-                                let rawUrl = parts.length > 1 ? parts[1].trim() : name;
+                                let name = '';
+                                let rawUrl = '';
+                                if (item.includes('|')) {
+                                    let parts = item.split('|');
+                                    let p0 = parts[0].trim();
+                                    let p1 = parts.slice(1).join('|').trim();
+                                    
+                                    let p0IsUrl = /^https?:\/\//i.test(p0) || (p0.includes('.') && !p0.includes(' '));
+                                    let p1IsUrl = /^https?:\/\//i.test(p1) || (p1.includes('.') && !p1.includes(' '));
+                                    
+                                    if (p0IsUrl && !p1IsUrl) {
+                                        rawUrl = p0;
+                                        name = p1;
+                                    } else {
+                                        rawUrl = p1;
+                                        name = p0;
+                                    }
+                                } else {
+                                    rawUrl = item.trim();
+                                    name = rawUrl.replace(/^https?:\/\//i, ''); // Ẩn chữ http:// cho đẹp
+                                }
+                                
                                 let fixedUrl = rawUrl;
                                 if (!fixedUrl.startsWith('http://') && !fixedUrl.startsWith('https://')) {
                                     fixedUrl = 'http://' + fixedUrl;
