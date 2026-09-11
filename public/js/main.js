@@ -100,28 +100,17 @@
             })
             .then(res => res.text())
             .then(html => {
-                // Đóng tất cả modal hiện tại đúng chuẩn Bootstrap
-                const openModals = document.querySelectorAll('.modal.show');
-                openModals.forEach(modalEl => {
-                    const inst = bootstrap.Modal.getInstance(modalEl);
-                    if (inst) inst.hide();
-                });
-
-                // Chờ modal fade out xong rồi thay đổi DOM
-                setTimeout(() => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    
-                    // Dọn dẹp class của body do bootstrap modal để lại (nếu có)
-                    document.body.className = doc.body.className;
-                    document.body.style = doc.body.style;
-                    
-                    // Cập nhật lại toàn bộ nội dung HTML
-                    document.body.innerHTML = doc.body.innerHTML;
-                    
-                    // Kích hoạt lại bộ hẹn giờ tự động tắt thông báo từ Server
-                    initAutoDismiss();
-                }, 350);
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                document.body.className = doc.body.className;
+                document.body.style = doc.body.style;
+                document.body.innerHTML = doc.body.innerHTML;
+                
+                // Dọn dẹp thủ công backdrop của Bootstrap để không bị kẹt màn hình xám
+                document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+                
+                initAutoDismiss();
             }).catch(err => {
                 console.error(err);
                 if (btn) {
