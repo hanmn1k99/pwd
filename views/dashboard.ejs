@@ -13,15 +13,6 @@
     <link rel="apple-touch-icon" href="/icon.png">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#0d6efd">
-    <style>
-        .hover-primary:hover {
-            background-color: var(--bs-primary) !important;
-            color: #fff !important;
-            border-color: var(--bs-primary) !important;
-            transform: scale(1.05);
-            transition: all 0.2s;
-        }
-    </style>
 </head>
 <body>
 
@@ -151,7 +142,7 @@
                                     fixedUrl = 'http://' + fixedUrl;
                                 }
                             %>
-                            <a href="<%= fixedUrl %>" target="_blank" class="badge bg-body-secondary text-secondary text-decoration-none d-inline-flex align-items-center py-1 px-2 border border-secondary-subtle fw-medium rounded-pill hover-primary" style="font-size: 0.75em;">
+                            <a href="<%= fixedUrl %>" target="_blank" class="badge bg-body-secondary text-secondary text-decoration-none d-inline-flex align-items-center py-1 px-2 border border-secondary-subtle fw-medium rounded-pill" style="font-size: 0.75em;">
                                 <ion-icon name="link-outline" class="me-1"></ion-icon> <%= name %>
                             </a>
                             <% }); %>
