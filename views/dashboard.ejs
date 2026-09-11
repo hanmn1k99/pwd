@@ -218,7 +218,7 @@
         <h5 class="modal-title fw-bold text-<%= config.THEME_COLOR %>"><ion-icon name="add-circle"></ion-icon> Thêm Tài Khoản Lưu Trữ</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <form action="/add_password" method="POST">
+      <form action="/add_password" method="POST" onsubmit="compileUrl('new')">
           <div class="modal-body py-0">
               <div class="mb-3">
                   <label class="form-label fw-semibold text-secondary">Tên hệ thống</label>
@@ -235,8 +235,26 @@
                   </div>
               </div>
               <div class="mb-3">
-                  <label class="form-label fw-semibold text-secondary">Đường dẫn (URL)</label>
-                  <input type="text" name="url" class="form-control bg-body-tertiary" placeholder="Camera 1|192.168.1.1, Camera 2|abc.com">
+                  <label class="form-label fw-semibold text-secondary mb-1">Cấu hình Đường dẫn (URL)</label>
+                  <div class="mb-2">
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="protocol_new" id="proto_https_new" value="https://" checked>
+                          <label class="form-check-label text-success fw-medium" for="proto_https_new">Web bảo mật (HTTPS)</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="protocol_new" id="proto_http_new" value="http://">
+                          <label class="form-check-label text-warning fw-medium" for="proto_http_new">Web nội bộ (HTTP)</label>
+                      </div>
+                  </div>
+                  <div id="link-container-new">
+                      <div class="input-group mb-2 link-row">
+                          <input type="text" class="form-control bg-body-tertiary link-name" placeholder="Tên (VD: Camera 1)">
+                          <input type="text" class="form-control bg-body-tertiary link-url" placeholder="Link (VD: 192.168.1.1)">
+                          <button class="btn btn-outline-danger btn-remove-link" type="button" onclick="this.parentElement.remove()"><ion-icon name="trash" class="d-flex"></ion-icon></button>
+                      </div>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addLinkRow('new')"><ion-icon name="add" class="align-middle"></ion-icon> Thêm Link</button>
+                  <input type="hidden" name="url" id="final_url_new">
               </div>
               <div class="mb-3">
                   <label class="form-label fw-semibold text-secondary">Ghi chú</label>
@@ -279,7 +297,7 @@
         <h5 class="modal-title fw-bold text-primary"><ion-icon name="create"></ion-icon> Sửa Tài Khoản</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <form action="/edit_password/<%= p.id %>" method="POST">
+      <form action="/edit_password/<%= p.id %>" method="POST" onsubmit="compileUrl('<%= p.id %>')">
           <div class="modal-body py-0">
               <div class="mb-3">
                   <label class="form-label fw-semibold text-secondary">Tên hệ thống</label>
@@ -296,8 +314,55 @@
                   </div>
               </div>
               <div class="mb-3">
-                  <label class="form-label fw-semibold text-secondary">Đường dẫn (URL)</label>
-                  <input type="text" name="url" class="form-control bg-body-tertiary" value="<%= p.url || '' %>">
+                  <label class="form-label fw-semibold text-secondary mb-1">Cấu hình Đường dẫn (URL)</label>
+                  <div class="mb-2">
+                      <% 
+                          let hasHttp = false;
+                          if (p.url) { hasHttp = p.url.includes('http://'); }
+                      %>
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="protocol_<%= p.id %>" id="proto_https_<%= p.id %>" value="https://" <%= !hasHttp ? 'checked' : '' %>>
+                          <label class="form-check-label text-success fw-medium" for="proto_https_<%= p.id %>">Web bảo mật (HTTPS)</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="protocol_<%= p.id %>" id="proto_http_<%= p.id %>" value="http://" <%= hasHttp ? 'checked' : '' %>>
+                          <label class="form-check-label text-warning fw-medium" for="proto_http_<%= p.id %>">Web nội bộ (HTTP)</label>
+                      </div>
+                  </div>
+                  <div id="link-container-<%= p.id %>">
+                      <% 
+                          if (p.url) {
+                              let items = p.url.split(/[,;\n]+/).filter(u => u.trim() !== '');
+                              items.forEach(item => {
+                                  let rowName = '';
+                                  let rowUrl = '';
+                                  if (item.includes('|')) {
+                                      let parts = item.split('|');
+                                      let p0 = parts[0].trim();
+                                      let p1 = parts.slice(1).join('|').trim();
+                                      let p0IsUrl = /^https?:\/\//i.test(p0) || (p0.includes('.') && !p0.includes(' '));
+                                      let p1IsUrl = /^https?:\/\//i.test(p1) || (p1.includes('.') && !p1.includes(' '));
+                                      if (p0IsUrl && !p1IsUrl) { rowUrl = p0; rowName = p1; } else { rowUrl = p1; rowName = p0; }
+                                  } else {
+                                      rowUrl = item.trim();
+                                  }
+                                  rowUrl = rowUrl.replace(/^https?:\/\//i, '');
+                      %>
+                      <div class="input-group mb-2 link-row">
+                          <input type="text" class="form-control bg-body-tertiary link-name" placeholder="Tên (VD: Camera 1)" value="<%= rowName %>">
+                          <input type="text" class="form-control bg-body-tertiary link-url" placeholder="Link (VD: 192.168.1.1)" value="<%= rowUrl %>">
+                          <button class="btn btn-outline-danger btn-remove-link" type="button" onclick="this.parentElement.remove()"><ion-icon name="trash" class="d-flex"></ion-icon></button>
+                      </div>
+                      <% }); } else { %>
+                      <div class="input-group mb-2 link-row">
+                          <input type="text" class="form-control bg-body-tertiary link-name" placeholder="Tên (VD: Camera 1)">
+                          <input type="text" class="form-control bg-body-tertiary link-url" placeholder="Link (VD: 192.168.1.1)">
+                          <button class="btn btn-outline-danger btn-remove-link" type="button" onclick="this.parentElement.remove()"><ion-icon name="trash" class="d-flex"></ion-icon></button>
+                      </div>
+                      <% } %>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addLinkRow('<%= p.id %>')"><ion-icon name="add" class="align-middle"></ion-icon> Thêm Link</button>
+                  <input type="hidden" name="url" id="final_url_<%= p.id %>">
               </div>
               <div class="mb-3">
                   <label class="form-label fw-semibold text-secondary">Ghi chú</label>
@@ -403,6 +468,44 @@
           navigator.serviceWorker.register('/sw.js');
         });
       }
+    </script>
+    <script>
+        function addLinkRow(id) {
+            const container = document.getElementById('link-container-' + id);
+            const html = `
+                <div class="input-group mb-2 link-row">
+                    <input type="text" class="form-control bg-body-tertiary link-name" placeholder="Tên (VD: Camera 1)">
+                    <input type="text" class="form-control bg-body-tertiary link-url" placeholder="Link (VD: 192.168.1.1)">
+                    <button class="btn btn-outline-danger btn-remove-link" type="button" onclick="this.parentElement.remove()"><ion-icon name="trash" class="d-flex"></ion-icon></button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function compileUrl(id) {
+            const container = document.getElementById('link-container-' + id);
+            const protocol = document.querySelector(`input[name="protocol_${id}"]:checked`).value;
+            const rows = container.querySelectorAll('.link-row');
+            let compiled = [];
+            
+            rows.forEach(row => {
+                let name = row.querySelector('.link-name').value.trim();
+                let url = row.querySelector('.link-url').value.trim();
+                
+                if (url !== '') {
+                    // Nếu người dùng đã tự gõ http/https thì tôn trọng, không thì tự gắn
+                    let fullUrl = (url.startsWith('http://') || url.startsWith('https://')) ? url : protocol + url;
+                    
+                    if (name !== '') {
+                        compiled.push(`${name} | ${fullUrl}`);
+                    } else {
+                        compiled.push(`${fullUrl}`);
+                    }
+                }
+            });
+            
+            document.getElementById('final_url_' + id).value = compiled.join(', ');
+        }
     </script>
 </body>
 </html>
