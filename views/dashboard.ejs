@@ -90,7 +90,7 @@
         <div class="d-flex justify-content-end mb-3">
               <% if (user.is_admin) { %>
               <button class="btn btn-outline-primary shadow-sm fw-bold border-2" data-bs-toggle="modal" data-bs-target="#addInternalModal">
-                  <ion-icon name="add-circle"></ion-icon> Thêm Mới Nội Bộ
+                  <ion-icon name="add-circle"></ion-icon> Thêm Mới
               </button>
               <% } %>
           </div>
@@ -646,14 +646,22 @@
 
         function processExcel() {
             const fileInput = document.getElementById('excelFileInput');
-            if (!fileInput.files.length) {
-                alert('Vui lòng chọn một file Excel (.xlsx)!');
-                return;
-            }
-            
             const progress = document.getElementById('uploadProgress');
             const bar = document.getElementById('uploadProgressBar');
             const status = document.getElementById('uploadStatusText');
+            
+            if (!fileInput.files.length) {
+                progress.classList.remove('d-none');
+                bar.style.width = '100%';
+                if (bar.classList.contains('bg-<%= config.THEME_COLOR %>')) bar.classList.replace('bg-<%= config.THEME_COLOR %>', 'bg-danger');
+                if (bar.classList.contains('bg-success')) bar.classList.replace('bg-success', 'bg-danger');
+                status.innerText = 'Vui lòng chọn một file Excel (.xlsx) trước!';
+                return;
+            }
+            
+            progress.classList.remove('d-none');
+            if (bar.classList.contains('bg-danger')) bar.classList.replace('bg-danger', 'bg-<%= config.THEME_COLOR %>');
+            if (bar.classList.contains('bg-success')) bar.classList.replace('bg-success', 'bg-<%= config.THEME_COLOR %>');
             
             progress.classList.remove('d-none');
             bar.style.width = '30%';
