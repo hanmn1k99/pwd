@@ -76,12 +76,12 @@
 %>
 
     <!-- Nav Tabs -->
-    <ul class="nav nav-pills mb-4 d-flex gap-2" id="passwordTabs" role="tablist">
+    <ul class="nav nav-pills p-1 bg-body-tertiary border border-secondary-subtle rounded-pill d-inline-flex mb-4 shadow-sm" id="passwordTabs" role="tablist">
       <li class="nav-item" role="presentation">
-        <button class="nav-link active fw-bold px-4 rounded-pill shadow-sm" id="internal-tab" data-bs-toggle="pill" data-bs-target="#internal-tab-pane" type="button" role="tab"><ion-icon name="shield-checkmark" class="me-1"></ion-icon> Nội Bộ (<%= internalPass.length %>)</button>
+        <button class="nav-link active fw-bold px-4 rounded-pill" id="internal-tab" data-bs-toggle="pill" data-bs-target="#internal-tab-pane" type="button" role="tab"><ion-icon name="shield-checkmark" class="me-1"></ion-icon> Nội Bộ (<%= internalPass.length %>)</button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link fw-bold px-4 text-secondary rounded-pill border shadow-sm bg-body-tertiary" id="shared-tab" data-bs-toggle="pill" data-bs-target="#shared-tab-pane" type="button" role="tab"><ion-icon name="share-social" class="me-1"></ion-icon> Công Khai (<%= sharedPass.length %>)</button>
+        <button class="nav-link fw-bold px-4 rounded-pill" id="shared-tab" data-bs-toggle="pill" data-bs-target="#shared-tab-pane" type="button" role="tab"><ion-icon name="share-social" class="me-1"></ion-icon> Công Khai (<%= sharedPass.length %>)</button>
       </li>
     </ul>
 
