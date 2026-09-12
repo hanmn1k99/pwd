@@ -216,12 +216,13 @@ app.get('/', requireLogin, (req, res) => {
 app.post('/add_password', requireLogin, (req, res) => {
     if (!req.session.user.is_admin) return res.status(403).send("Forbidden");
     
-    let { title, acc_username, password, url, notes, allowed_users } = req.body;
+    let { title, acc_username, password, url, notes, allowed_users, secret_code } = req.body;
+    let final_secret = secret_code ? secret_code.trim() : '';
     
     const enc = encrypt(password);
     
     db.run(`INSERT INTO passwords (title, acc_username, encrypted_password, iv, url, notes, owner_id, secret_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [title, acc_username, enc.encryptedData, enc.iv, url, notes, req.session.user.id, ''], function(err) {
+        [title, acc_username, enc.encryptedData, enc.iv, url, notes, req.session.user.id, final_secret], function(err) {
         if (err) return res.send(err);
         
         const pwd_id = this.lastID;

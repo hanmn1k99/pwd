@@ -43,11 +43,7 @@
                 Xin chào, <strong><!--email_off--><%= user.username %><!--/email_off--></strong> 
                 <% if (user.is_admin) { %><span class="badge bg-danger ms-1">Admin</span><% } %>
             </span>
-            <% if (user.is_admin) { %>
-            <button class="btn btn-outline-warning btn-sm me-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#uploadCsvModal">
-                <ion-icon name="cloud-upload"></ion-icon> Nhập File
-            </button>
-            <% } %>
+            
             <button class="btn btn-outline-info btn-sm me-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#changePwModal">
                 <ion-icon name="key"></ion-icon> Đổi Mật Khẩu
             </button>
@@ -208,7 +204,7 @@
         <% if (sharedPass.length > 0) { %>
         <div class="table-responsive bg-body-tertiary rounded-4 border border-secondary-subtle shadow-sm mb-5">
             <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
+                <thead>
                     <tr>
                         <th class="ps-4">Mã Chia Sẻ</th>
                         <th>Tiêu đề</th>
@@ -293,7 +289,7 @@
                       </div>
                       <div class="form-check form-check-inline">
                           <input class="form-check-input" type="radio" name="protocol_new" id="proto_http_new" value="http://">
-                          <label class="form-check-label text-warning fw-medium" for="proto_http_new">Web nội bộ (HTTP)</label>
+                          <label class="form-check-label text-<%= config.THEME_COLOR %> fw-medium" for="proto_http_new">Web nội bộ (HTTP)</label>
                       </div>
                   </div>
                   <div id="link-container-new">
@@ -381,7 +377,7 @@
                       </div>
                       <div class="form-check form-check-inline">
                           <input class="form-check-input" type="radio" name="protocol_<%= p.id %>" id="proto_http_<%= p.id %>" value="http://" <%= hasHttp ? 'checked' : '' %>>
-                          <label class="form-check-label text-warning fw-medium" for="proto_http_<%= p.id %>">Web nội bộ (HTTP)</label>
+                          <label class="form-check-label text-<%= config.THEME_COLOR %> fw-medium" for="proto_http_<%= p.id %>">Web nội bộ (HTTP)</label>
                       </div>
                   </div>
                   <div id="link-container-<%= p.id %>">
@@ -521,7 +517,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg rounded-4">
       <div class="modal-header border-bottom-0 pb-0">
-        <h5 class="modal-title fw-bold text-warning"><ion-icon name="cloud-upload"></ion-icon> Nhập dữ liệu hàng loạt</h5>
+        <h5 class="modal-title fw-bold text-<%= config.THEME_COLOR %>"><ion-icon name="cloud-upload"></ion-icon> Nhập dữ liệu hàng loạt</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
@@ -537,7 +533,7 @@
           </div>
           <div id="uploadProgress" class="d-none">
               <div class="progress mb-2" style="height: 10px;">
-                  <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" id="uploadProgressBar" style="width: 0%"></div>
+                  <div class="progress-bar progress-bar-striped progress-bar-animated bg-<%= config.THEME_COLOR %>" id="uploadProgressBar" style="width: 0%"></div>
               </div>
               <p class="text-center text-muted small mb-0" id="uploadStatusText">Đang xử lý...</p>
           </div>
@@ -552,7 +548,7 @@
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/js/main.js?v=1788340493607"></script>
+<script src="/js/main.js?v=<%= Date.now() %>"></script>
 
     <!-- Đăng ký Service Worker cho PWA -->
     <script>
@@ -625,7 +621,7 @@
             .then(res => res.json())
             .then(data => {
                 bar.style.width = '100%';
-                bar.classList.replace('bg-warning', 'bg-success');
+                bar.classList.replace('bg-<%= config.THEME_COLOR %>', 'bg-success');
                 if (data.success) {
                     status.innerText = `Thành công: Đã nhập ${data.count} tài khoản! Tải lại trang...`;
                     setTimeout(() => window.location.reload(), 1500);
@@ -636,7 +632,7 @@
             })
             .catch(err => {
                 status.innerText = 'Lỗi kết nối!';
-                bar.classList.replace('bg-warning', 'bg-danger');
+                bar.classList.replace('bg-<%= config.THEME_COLOR %>', 'bg-danger');
             });
         }
     </script>
