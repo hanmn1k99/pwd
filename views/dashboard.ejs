@@ -103,7 +103,7 @@
                                 <div>
                                     <% if (user.is_admin) { %>
                                         <button class="btn btn-sm btn-outline-primary border-0" data-bs-toggle="modal" data-bs-target="#editPasswordModal-<%= p.id %>" title="Sửa"><ion-icon name="create" class="icon-only fs-5"></ion-icon></button>
-                                        <button type="button" class="btn btn-sm btn-outline-danger border-0" title="Xóa" onclick="confirmDelete('<%= p.id %>')"><ion-icon name="trash" class="icon-only fs-5"></ion-icon></button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger border-0" title="Xóa" onclick="handleDeleteClick(this, '<%= p.id %>')"><ion-icon name="trash" class="icon-only fs-5"></ion-icon></button>
                                     <% } %>
                                 </div>
                             </div>
@@ -238,7 +238,7 @@
                             <button class="btn btn-sm btn-outline-secondary border-0" onclick="togglePasswordShared('<%= p.id %>', '<%= p.decrypted.replace(/'/g, "\\'") %>')" title="Xem mật khẩu"><ion-icon name="eye" id="icon-shared-<%= p.id %>" class="icon-only fs-6"></ion-icon></button>
                             <% if (user.is_admin) { %>
                             <button class="btn btn-sm btn-outline-primary border-0 ms-1" data-bs-toggle="modal" data-bs-target="#editPasswordModal-<%= p.id %>" title="Sửa"><ion-icon name="create" class="icon-only fs-6"></ion-icon></button>
-                            <button type="button" class="btn btn-sm btn-outline-danger border-0" title="Xóa" onclick="confirmDelete('<%= p.id %>')"><ion-icon name="trash" class="icon-only fs-6"></ion-icon></button>
+                            <button type="button" class="btn btn-sm btn-outline-danger border-0" title="Xóa" onclick="handleDeleteClick(this, '<%= p.id %>')"><ion-icon name="trash" class="icon-only fs-6"></ion-icon></button>
                             <% } %>
                         </td>
                     </tr>
@@ -590,23 +590,7 @@
   </div>
 </div>
 
-<!-- Delete Confirm Modal -->
-  <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-      <div class="modal-content rounded-4 border-0 shadow-lg">
-        <div class="modal-body text-center p-4">
-          <ion-icon name="warning" class="text-danger mb-3" style="font-size: 3.5rem;"></ion-icon>
-          <h5 class="fw-bold mb-3">Xóa tài khoản này?</h5>
-          <p class="text-muted mb-4">Hành động này không thể hoàn tác. Bạn chắc chắn chứ?</p>
-          <div class="d-flex justify-content-center gap-2">
-            <button type="button" class="btn btn-outline-secondary px-4 fw-semibold border-2" data-bs-dismiss="modal">Hủy</button>
-            <form id="deleteForm" class="m-0">
-                <button type="submit" class="btn btn-danger px-4 fw-bold shadow-sm border-2">Xóa luôn</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+
   </div>
   
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
@@ -654,18 +638,13 @@
             }
         });
         
-        let deleteModalInstance = null;
-        function confirmDelete(id) {
-            if (!deleteModalInstance) {
-                deleteModalInstance = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
-            }
-            const form = document.getElementById('deleteForm');
-            form.onsubmit = function(e) {
-                e.preventDefault();
+        function handleDeleteClick(btn, id) {
+            if (btn.classList.contains('confirming')) {
+                // Lần click thứ 2: Thực hiện xóa
+                btn.innerHTML = '<ion-icon name="sync" class="icon-only fs-5" style="animation: spin 1s linear infinite;"></ion-icon>';
+                
                 fetch('/delete_password/' + id, { method: 'POST' })
                 .then(res => {
-                    deleteModalInstance.hide();
-                    
                     fetch(window.location.href)
                         .then(r => r.text())
                         .then(newHtml => {
@@ -676,9 +655,33 @@
                             bindTabPersistence();
                         });
                 });
-            };
-            deleteModalInstance.show();
+            } else {
+                // Lần click đầu tiên: Chuyển sang trạng thái chờ xác nhận
+                let originalHtml = btn.innerHTML;
+                let originalClasses = btn.className;
+                
+                btn.classList.add('confirming');
+                btn.classList.remove('btn-outline-danger');
+                btn.classList.add('btn-danger', 'text-white');
+                btn.innerHTML = '<ion-icon name="checkmark-circle" class="icon-only fs-5"></ion-icon>';
+                
+                // Tự động hủy trạng thái xác nhận sau 3 giây nếu không click tiếp
+                setTimeout(() => {
+                    if(btn.classList.contains('confirming')) {
+                        btn.className = originalClasses;
+                        btn.innerHTML = originalHtml;
+                    }
+                }, 3000);
+            }
         }
+        
+        // CSS for spinner (sync icon rotation)
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes spin { 100% { transform: rotate(360deg); } }
+            .btn.confirming { transition: all 0.2s ease-in-out; }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
