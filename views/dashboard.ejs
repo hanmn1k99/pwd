@@ -643,6 +643,15 @@
                 }
             }
             bindTabPersistence();
+            
+            // Auto-focus nút Xóa khi hiện Modal để người dùng ấn Enter luôn
+            const delModal = document.getElementById('deleteConfirmModal');
+            if (delModal) {
+                delModal.addEventListener('shown.bs.modal', function () {
+                    const btn = delModal.querySelector('button[type="submit"]');
+                    if (btn) btn.focus();
+                });
+            }
         });
         
         let deleteModalInstance = null;
