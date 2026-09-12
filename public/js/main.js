@@ -35,6 +35,19 @@
         }
     }
 
+    function toggleSecret(id, secret) {
+        let el = document.getElementById('secret-' + id);
+        let btnIcon = document.getElementById('icon-secret-' + id);
+        
+        if (el.innerText === '••••••••') {
+            el.innerText = secret;
+            btnIcon.setAttribute('name', 'eye-off');
+        } else {
+            el.innerText = '••••••••';
+            btnIcon.setAttribute('name', 'eye');
+        }
+    }
+
     function showToast(message, icon = 'checkmark-circle') {
         const toastContainer = document.querySelector('.position-fixed.top-0.end-0');
         if (toastContainer) {

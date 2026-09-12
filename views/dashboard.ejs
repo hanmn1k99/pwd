@@ -220,7 +220,14 @@
                 <tbody>
                     <% sharedPass.forEach(p => { %>
                     <tr>
-                        <td class="ps-4"><span class="badge bg-<%= config.THEME_COLOR %> text-white px-3 py-2 fw-bold shadow-sm" style="font-size: 0.9em; letter-spacing: 1px;"><%= p.secret_code %></span></td>
+                        <td class="ps-4">
+                            <div class="d-inline-flex align-items-center">
+                                <span class="badge bg-<%= config.THEME_COLOR %> text-white px-3 py-2 fw-bold shadow-sm font-monospace" id="secret-<%= p.id %>" style="font-size: 0.9em; letter-spacing: 2px;">••••••••</span>
+                                <button class="btn btn-sm btn-link text-secondary p-0 ms-2" onclick="toggleSecret('<%= p.id %>', '<%= p.secret_code.replace(/'/g, "\\\\'") %>')" title="Xem/Ẩn Mã Bí Mật">
+                                    <ion-icon name="eye" id="icon-secret-<%= p.id %>" class="fs-6"></ion-icon>
+                                </button>
+                            </div>
+                        </td>
                         <td class="fw-bold text-<%= config.THEME_COLOR %>"><%= p.title %></td>
                         <td><!--email_off--><%= p.acc_username %><!--/email_off--></td>
                         <td>
