@@ -6,6 +6,11 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const config = require('./config');
+const multer = require('multer');
+const xlsx = require('xlsx');
+
+// Thiết lập multer để upload file lên RAM (memory storage)
+const upload = multer({ storage: multer.memoryStorage() });
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -121,7 +126,7 @@ app.post('/setup', (req, res) => {
         return res.render('setup', { error: 'Tài khoản và mật khẩu không được để trống!' });
     }
     if (!isStrongPassword(password)) {
-        return res.render('setup', { error: 'Mật khẩu phải dài ít nhất 8 ký tự, có chữ hoa, chữ thường và số!' });
+        return res.render('setup', { error: 'Mật khẩu phải >= 8 ký tự, gồm: chữ hoa, chữ thường, số và ký tự đặc biệt!' });
     }
     
     const hash = bcrypt.hashSync(password, 8);
@@ -232,43 +237,81 @@ app.post('/add_password', requireLogin, (req, res) => {
     });
 });
 
-// Helper kiểm tra mật khẩu mạnh
+// Helper kiểm tra mật khẩu mạnh (Yêu cầu thêm ký tự đặc biệt)
 function isStrongPassword(pw) {
-    return pw.length >= 8 && /[A-Z]/.test(pw) && /[a-z]/.test(pw) && /[0-9]/.test(pw);
+    return pw.length >= 8 && /[A-Z]/.test(pw) && /[a-z]/.test(pw) && /[0-9]/.test(pw) && /[^A-Za-z0-9]/.test(pw);
 }
 
-app.post('/bulk_add_passwords', requireLogin, (req, res) => {
+app.get('/download_template', requireLogin, (req, res) => {
+    if (!req.session.user.is_admin) return res.status(403).send("Forbidden");
+    
+    // Tạo workbook mẫu
+    const wb = xlsx.utils.book_new();
+    const ws_data = [
+        ["Title", "Username", "Password", "URL", "Notes", "SecretCode"],
+        ["Server Chính", "admin", "P@ssw0rd123!", "https://minhhan.net", "Server VIP", "MH_S1"],
+        ["Camera Tầng 1", "cam_admin", "Cam@2026", "Camera T1 | 192.168.1.100", "Ghi chú camera", ""]
+    ];
+    const ws = xlsx.utils.aoa_to_sheet(ws_data);
+    
+    // Chỉnh độ rộng cột cho đẹp
+    ws['!cols'] = [{wch: 20}, {wch: 15}, {wch: 15}, {wch: 35}, {wch: 20}, {wch: 15}];
+    xlsx.utils.book_append_sheet(wb, ws, "Passwords");
+    
+    const buffer = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' });
+    
+    res.setHeader('Content-Disposition', 'attachment; filename="PwdManager_Template.xlsx"');
+    res.type('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.send(buffer);
+});
+
+app.post('/bulk_upload_excel', requireLogin, upload.single('excelFile'), (req, res) => {
     if (!req.session.user.is_admin) return res.status(403).json({success: false, error: "Forbidden"});
+    if (!req.file) return res.json({success: false, error: "Không tìm thấy file!"});
     
-    let passwords = req.body;
-    if (!Array.isArray(passwords)) return res.json({success: false, error: "Invalid data format"});
-    
-    let successCount = 0;
-    let errors = [];
-    
-    // Sử dụng db.serialize để đảm bảo tuần tự
-    db.serialize(() => {
-        const stmt = db.prepare(`INSERT INTO passwords (title, acc_username, encrypted_password, iv, url, notes, owner_id, secret_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
-        const accessStmt = db.prepare(`INSERT INTO access (user_id, password_id) VALUES (?, ?)`);
+    try {
+        const wb = xlsx.read(req.file.buffer, { type: 'buffer' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const data = xlsx.utils.sheet_to_json(ws);
         
-        passwords.forEach((pw, index) => {
-            const enc = encrypt(pw.password || '');
-            stmt.run([pw.title, pw.acc_username, enc.encryptedData, enc.iv, pw.url, pw.notes, req.session.user.id, pw.secret_code || ''], function(err) {
-                if (err) {
-                    errors.push(`Row ${index + 1}: ${err.message}`);
-                } else {
-                    successCount++;
-                    accessStmt.run([req.session.user.id, this.lastID]);
-                }
+        if (data.length === 0) return res.json({success: false, error: "File rỗng!"});
+        
+        let successCount = 0;
+        let errors = [];
+        
+        db.serialize(() => {
+            const stmt = db.prepare(`INSERT INTO passwords (title, acc_username, encrypted_password, iv, url, notes, owner_id, secret_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
+            const accessStmt = db.prepare(`INSERT INTO access (user_id, password_id) VALUES (?, ?)`);
+            
+            data.forEach((row, index) => {
+                const title = row['Title'] || 'Unknown';
+                const acc = row['Username'] || '';
+                const pwd = row['Password'] || '';
+                const url = row['URL'] || '';
+                const notes = row['Notes'] || '';
+                const secret = row['SecretCode'] || '';
+                
+                const enc = encrypt(pwd.toString());
+                
+                stmt.run([title, acc, enc.encryptedData, enc.iv, url, notes, req.session.user.id, secret], function(err) {
+                    if (err) {
+                        errors.push(`Dòng ${index + 2}: ${err.message}`);
+                    } else {
+                        successCount++;
+                        accessStmt.run([req.session.user.id, this.lastID]);
+                    }
+                });
+            });
+            
+            stmt.finalize(() => {
+                accessStmt.finalize(() => {
+                    res.json({success: true, count: successCount, errors: errors});
+                });
             });
         });
-        
-        stmt.finalize(() => {
-            accessStmt.finalize(() => {
-                res.json({success: true, count: successCount, errors: errors});
-            });
-        });
-    });
+    } catch (error) {
+        res.json({success: false, error: "Định dạng file không hợp lệ hoặc lỗi đọc file Excel!"});
+    }
 });
 
 app.post('/add_user', requireLogin, (req, res) => {

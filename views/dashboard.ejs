@@ -471,7 +471,7 @@
 </div>
 <% } %>
 
-<!-- Modal Upload CSV -->
+<!-- Modal Upload Excel -->
 <div class="modal fade" id="uploadCsvModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg rounded-4">
@@ -480,11 +480,12 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-          <div class="alert alert-info py-2" style="font-size: 0.9em;">
-              <ion-icon name="information-circle"></ion-icon> Tải lên file CSV chứa các cột: <b>Title, Username, Password, URL, Notes, SecretCode</b>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+              <span class="text-secondary small">Vui lòng sử dụng file mẫu chuẩn:</span>
+              <a href="/download_template" class="btn btn-sm btn-outline-success"><ion-icon name="download"></ion-icon> Tải File Mẫu (.xlsx)</a>
           </div>
           <div class="mb-3">
-              <input class="form-control bg-body-tertiary" type="file" id="csvFileInput" accept=".csv">
+              <input class="form-control bg-body-tertiary" type="file" id="excelFileInput" accept=".xlsx, .xls">
           </div>
           <div id="uploadProgress" class="d-none">
               <div class="progress mb-2" style="height: 10px;">
@@ -494,7 +495,7 @@
           </div>
       </div>
       <div class="modal-footer border-top-0 pt-0">
-          <button type="button" class="btn btn-warning w-100 fw-bold" onclick="processCSV()"><ion-icon name="play"></ion-icon> Bắt Đầu Nhập</button>
+          <button type="button" class="btn btn-warning w-100 fw-bold" onclick="processExcel()"><ion-icon name="play"></ion-icon> Bắt Đầu Nhập</button>
       </div>
     </div>
   </div>
@@ -551,10 +552,10 @@
             document.getElementById('final_url_' + id).value = compiled.join(', ');
         }
 
-        function processCSV() {
-            const fileInput = document.getElementById('csvFileInput');
+        function processExcel() {
+            const fileInput = document.getElementById('excelFileInput');
             if (!fileInput.files.length) {
-                alert('Vui lòng chọn một file CSV!');
+                alert('Vui lòng chọn một file Excel (.xlsx)!');
                 return;
             }
             
@@ -563,59 +564,32 @@
             const status = document.getElementById('uploadStatusText');
             
             progress.classList.remove('d-none');
-            bar.style.width = '20%';
-            status.innerText = 'Đang đọc file...';
+            bar.style.width = '30%';
+            status.innerText = 'Đang đẩy file lên Server...';
             
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const text = e.target.result;
-                const lines = text.split('\n').filter(line => line.trim() !== '');
-                
-                // Giả định dòng đầu là Header, bỏ qua
-                let passwords = [];
-                for (let i = 1; i < lines.length; i++) {
-                    // Split theo dấu phẩy, xử lý cơ bản (không cover ngoặc kép phức tạp)
-                    const cols = lines[i].split(',').map(c => c.trim());
-                    if (cols.length >= 1) {
-                        passwords.push({
-                            title: cols[0] || 'Unknown',
-                            acc_username: cols[1] || '',
-                            password: cols[2] || '',
-                            url: cols[3] || '',
-                            notes: cols[4] || '',
-                            secret_code: cols[5] || ''
-                        });
-                    }
+            const formData = new FormData();
+            formData.append('excelFile', fileInput.files[0]);
+            
+            fetch('/bulk_upload_excel', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                bar.style.width = '100%';
+                bar.classList.replace('bg-warning', 'bg-success');
+                if (data.success) {
+                    status.innerText = `Thành công: Đã nhập ${data.count} tài khoản! Tải lại trang...`;
+                    setTimeout(() => window.location.reload(), 1500);
+                } else {
+                    status.innerText = `Lỗi: ${data.error}`;
+                    bar.classList.replace('bg-success', 'bg-danger');
                 }
-                
-                bar.style.width = '50%';
-                status.innerText = `Đang gửi ${passwords.length} dòng lên Server...`;
-                
-                fetch('/bulk_add_passwords', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(passwords)
-                })
-                .then(res => res.json())
-                .then(data => {
-                    bar.style.width = '100%';
-                    bar.classList.replace('bg-warning', 'bg-success');
-                    if (data.success) {
-                        status.innerText = `Thành công: Đã nhập ${data.count} tài khoản! Tải lại trang...`;
-                        setTimeout(() => window.location.reload(), 1500);
-                    } else {
-                        status.innerText = `Lỗi: ${data.error}`;
-                        bar.classList.replace('bg-success', 'bg-danger');
-                    }
-                })
-                .catch(err => {
-                    status.innerText = 'Lỗi kết nối!';
-                    bar.classList.replace('bg-warning', 'bg-danger');
-                });
-            };
-            reader.readAsText(fileInput.files[0]);
+            })
+            .catch(err => {
+                status.innerText = 'Lỗi kết nối!';
+                bar.classList.replace('bg-warning', 'bg-danger');
+            });
         }
     </script>
 </body>
