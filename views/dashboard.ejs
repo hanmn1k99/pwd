@@ -200,8 +200,11 @@
       <!-- Shared Tab -->
       <div class="tab-pane fade" id="shared-tab-pane" role="tabpanel">
         <% if (user.is_admin) { %>
-        <div class="d-flex justify-content-end mb-3">
-            <button class="btn btn-outline-success btn-sm fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#uploadCsvModal">
+          <div class="d-flex justify-content-end mb-3 gap-2">
+              <button class="btn btn-outline-primary shadow-sm fw-bold border-2" data-bs-toggle="modal" data-bs-target="#addPublicModal">
+                  <ion-icon name="add-circle"></ion-icon> Thêm Mới
+              </button>
+              <button class="btn btn-outline-success shadow-sm fw-bold border-2" data-bs-toggle="modal" data-bs-target="#uploadCsvModal">
                 <ion-icon name="cloud-upload"></ion-icon> Nhập File Excel (Hàng Loạt)
             </button>
         </div>
