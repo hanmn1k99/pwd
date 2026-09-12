@@ -10,6 +10,28 @@ jobs:
     name: Build & Test
     runs-on: ubuntu-latest
     steps:
+      - name: Discord Notification (Start)
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+        run: |
+          JSON_PAYLOAD=$(jq -n \
+            --arg username "${{ github.repository }} (CI/CD)" \
+            --arg title "🚀 Bắt đầu quá trình CI/CD..." \
+            --argjson color 16753920 \
+            --arg repo "${{ github.repository }}" \
+            --arg commit "$COMMIT_MSG" \
+            --arg actor "${{ github.actor }}" \
+            '{
+              username: $username,
+              avatar_url: "https://minhhan.net/wp-content/uploads/2026/09/cropped-Asset-6.png",
+              embeds: [{
+                title: $title,
+                color: $color,
+                description: ("Dự Án: **" + $repo + "**\nNội dung: **" + $commit + "**\nThực hiện bởi: **" + $actor + "**\nTrạng thái: **Đang tiến hành Build & Deploy... ⏳**")
+              }]
+            }')
+          curl -H "Content-Type: application/json" -d "$JSON_PAYLOAD" ${{ secrets.DISCORD_WEBHOOK_URL }}
+
       - name: Checkout Code
         uses: actions/checkout@v4
 
