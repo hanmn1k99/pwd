@@ -11,6 +11,7 @@ const app = express();
 app.set('view engine', 'ejs');
 app.use(express.static('public')); // Serve static files
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // Truyền config ra toàn bộ giao diện EJS
 app.use((req, res, next) => {
@@ -66,8 +67,16 @@ db.serialize(() => {
         encrypted_password TEXT,
         iv TEXT,
         url TEXT,
-        notes TEXT
-    )`);
+        notes TEXT,
+        owner_id INTEGER,
+        secret_code TEXT
+    )`, (err) => {
+        // Tự động gán owner_id = 1 cho các mật khẩu cũ để không bị lỗi
+        db.run(`ALTER TABLE passwords ADD COLUMN owner_id INTEGER`, (err) => {
+            if (!err) db.run(`UPDATE passwords SET owner_id = 1 WHERE owner_id IS NULL`);
+        });
+        db.run(`ALTER TABLE passwords ADD COLUMN secret_code TEXT`, (err) => {});
+    });
     db.run(`CREATE TABLE IF NOT EXISTS access (
         user_id INTEGER,
         password_id INTEGER,
@@ -108,8 +117,11 @@ app.post('/setup', (req, res) => {
     if (password !== confirm_password) {
         return res.render('setup', { error: 'Mật khẩu xác nhận không khớp!' });
     }
-    if (!username || !password || password.length < 6) {
-        return res.render('setup', { error: 'Tài khoản và mật khẩu (tối thiểu 6 ký tự) không được để trống!' });
+    if (!username || !password) {
+        return res.render('setup', { error: 'Tài khoản và mật khẩu không được để trống!' });
+    }
+    if (!isStrongPassword(password)) {
+        return res.render('setup', { error: 'Mật khẩu phải dài ít nhất 8 ký tự, có chữ hoa, chữ thường và số!' });
     }
     
     const hash = bcrypt.hashSync(password, 8);
@@ -168,16 +180,14 @@ app.get('/', requireLogin, (req, res) => {
     }
 
     function getPasswords() {
-        let query = "";
-        let params = [];
-        if (user.is_admin) {
-            query = "SELECT * FROM passwords";
-        } else {
-            query = `SELECT p.* FROM passwords p 
-                     JOIN access a ON p.id = a.password_id 
-                     WHERE a.user_id = ?`;
-            params = [user.id];
-        }
+        // Áp dụng Admin Isolation: Cả Admin lẫn User chỉ thấy mật khẩu do mình tạo hoặc được share
+        let query = `
+            SELECT p.* FROM passwords p 
+            LEFT JOIN access a ON p.id = a.password_id 
+            WHERE p.owner_id = ? OR a.user_id = ?
+            GROUP BY p.id
+        `;
+        let params = [user.id, user.id];
 
         db.all(query, params, (err, passwords) => {
             if (user.is_admin && passwords.length > 0) {
@@ -205,8 +215,8 @@ app.post('/add_password', requireLogin, (req, res) => {
     
     const enc = encrypt(password);
     
-    db.run(`INSERT INTO passwords (title, acc_username, encrypted_password, iv, url, notes) VALUES (?, ?, ?, ?, ?, ?)`,
-        [title, acc_username, enc.encryptedData, enc.iv, url, notes], function(err) {
+    db.run(`INSERT INTO passwords (title, acc_username, encrypted_password, iv, url, notes, owner_id, secret_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [title, acc_username, enc.encryptedData, enc.iv, url, notes, req.session.user.id, ''], function(err) {
         if (err) return res.send(err);
         
         const pwd_id = this.lastID;
@@ -222,8 +232,51 @@ app.post('/add_password', requireLogin, (req, res) => {
     });
 });
 
+// Helper kiểm tra mật khẩu mạnh
+function isStrongPassword(pw) {
+    return pw.length >= 8 && /[A-Z]/.test(pw) && /[a-z]/.test(pw) && /[0-9]/.test(pw);
+}
+
+app.post('/bulk_add_passwords', requireLogin, (req, res) => {
+    if (!req.session.user.is_admin) return res.status(403).json({success: false, error: "Forbidden"});
+    
+    let passwords = req.body;
+    if (!Array.isArray(passwords)) return res.json({success: false, error: "Invalid data format"});
+    
+    let successCount = 0;
+    let errors = [];
+    
+    // Sử dụng db.serialize để đảm bảo tuần tự
+    db.serialize(() => {
+        const stmt = db.prepare(`INSERT INTO passwords (title, acc_username, encrypted_password, iv, url, notes, owner_id, secret_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
+        const accessStmt = db.prepare(`INSERT INTO access (user_id, password_id) VALUES (?, ?)`);
+        
+        passwords.forEach((pw, index) => {
+            const enc = encrypt(pw.password || '');
+            stmt.run([pw.title, pw.acc_username, enc.encryptedData, enc.iv, pw.url, pw.notes, req.session.user.id, pw.secret_code || ''], function(err) {
+                if (err) {
+                    errors.push(`Row ${index + 1}: ${err.message}`);
+                } else {
+                    successCount++;
+                    accessStmt.run([req.session.user.id, this.lastID]);
+                }
+            });
+        });
+        
+        stmt.finalize(() => {
+            accessStmt.finalize(() => {
+                res.json({success: true, count: successCount, errors: errors});
+            });
+        });
+    });
+});
+
 app.post('/add_user', requireLogin, (req, res) => {
     if (!req.session.user.is_admin) return res.status(403).send("Forbidden");
+    
+    if (!isStrongPassword(req.body.password)) {
+        return res.redirect('/?msg=weak_password');
+    }
     
     const hash = bcrypt.hashSync(req.body.password, 8);
     const is_admin = req.body.is_admin === 'on' ? 1 : 0;
@@ -237,6 +290,11 @@ app.post('/add_user', requireLogin, (req, res) => {
 
 app.post('/change_my_password', requireLogin, (req, res) => {
     const { old_password, new_password } = req.body;
+    
+    if (!isStrongPassword(new_password)) {
+        return res.redirect('/?msg=weak_password');
+    }
+    
     db.get("SELECT * FROM users WHERE id = ?", [req.session.user.id], (err, user) => {
         if (user && bcrypt.compareSync(old_password, user.password_hash)) {
             const hash = bcrypt.hashSync(new_password, 8);
@@ -250,10 +308,12 @@ app.post('/change_my_password', requireLogin, (req, res) => {
 });
 
 app.post('/delete_password/:id', requireLogin, (req, res) => {
-    if (!req.session.user.is_admin) return res.status(403).send("Forbidden");
-    db.run("DELETE FROM passwords WHERE id = ?", [req.params.id], (err) => {
-        db.run("DELETE FROM access WHERE password_id = ?", [req.params.id]);
-        res.redirect('/?msg=deleted');
+    db.get(`SELECT owner_id FROM passwords WHERE id = ?`, [req.params.id], (err, row) => {
+        if (!row || row.owner_id !== req.session.user.id) return res.status(403).send("Chỉ người tạo mới có quyền xoá!");
+        db.run("DELETE FROM passwords WHERE id = ?", [req.params.id], (err) => {
+            db.run("DELETE FROM access WHERE password_id = ?", [req.params.id]);
+            res.redirect('/?msg=deleted');
+        });
     });
 });
 
@@ -268,14 +328,16 @@ app.post('/delete_user/:id', requireLogin, (req, res) => {
 });
 
 app.post('/edit_password/:id', requireLogin, (req, res) => {
-    if (!req.session.user.is_admin) return res.status(403).send("Forbidden");
-    let { title, acc_username, password, url, notes, allowed_users } = req.body;
+    let { title, acc_username, password, url, notes, allowed_users, secret_code } = req.body;
     
-    
-    db.run(`UPDATE passwords SET title=?, acc_username=?, url=?, notes=? WHERE id=?`, 
-        [title, acc_username, url, notes, req.params.id], (err) => {
-        
-        if (password && password.trim() !== '') {
+    // Check ownership
+    db.get(`SELECT owner_id FROM passwords WHERE id = ?`, [req.params.id], (err, row) => {
+        if (!row || row.owner_id !== req.session.user.id) return res.status(403).send("Bạn không có quyền sửa mật khẩu này (Chỉ người tạo mới được sửa)!");
+
+        db.run(`UPDATE passwords SET title=?, acc_username=?, url=?, notes=?, secret_code=? WHERE id=?`, 
+            [title, acc_username, url, notes, secret_code || '', req.params.id], (err) => {
+            
+            if (password && password.trim() !== '') {
             const enc = encrypt(password);
             db.run(`UPDATE passwords SET encrypted_password=?, iv=? WHERE id=?`, [enc.encryptedData, enc.iv, req.params.id]);
         }
@@ -289,6 +351,33 @@ app.post('/edit_password/:id', requireLogin, (req, res) => {
             }
         });
         res.redirect('/?msg=updated');
+        });
+    });
+});
+
+app.get('/secret', (req, res) => {
+    res.render('secret', { passwordData: null, error: null });
+});
+
+app.post('/secret', (req, res) => {
+    const { secret_code } = req.body;
+    if (!secret_code || secret_code.trim() === '') {
+        return res.render('secret', { passwordData: null, error: 'Vui lòng nhập mã bí mật!' });
+    }
+    
+    db.get("SELECT * FROM passwords WHERE secret_code = ?", [secret_code.trim()], (err, row) => {
+        if (err || !row) {
+            return res.render('secret', { passwordData: null, error: 'Mã bí mật không hợp lệ hoặc không tồn tại!' });
+        }
+        
+        // Decrypt password
+        let dec = '';
+        if (row.encrypted_password && row.iv) {
+            dec = decrypt(row.encrypted_password, row.iv);
+        }
+        row.decrypted = dec;
+        
+        res.render('secret', { passwordData: row, error: null });
     });
 });
 

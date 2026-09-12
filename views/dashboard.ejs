@@ -43,6 +43,11 @@
                 Xin chào, <strong><!--email_off--><%= user.username %><!--/email_off--></strong> 
                 <% if (user.is_admin) { %><span class="badge bg-danger ms-1">Admin</span><% } %>
             </span>
+            <% if (user.is_admin) { %>
+            <button class="btn btn-outline-warning btn-sm me-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#uploadCsvModal">
+                <ion-icon name="cloud-upload"></ion-icon> Nhập File
+            </button>
+            <% } %>
             <button class="btn btn-outline-info btn-sm me-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#changePwModal">
                 <ion-icon name="key"></ion-icon> Đổi Mật Khẩu
             </button>
@@ -257,6 +262,11 @@
                   <input type="hidden" name="url" id="final_url_new">
               </div>
               <div class="mb-3">
+                  <label class="form-label fw-semibold text-secondary"><ion-icon name="key-outline"></ion-icon> Mã Chia Sẻ Bí Mật</label>
+                  <input type="text" name="secret_code" class="form-control bg-body-tertiary" placeholder="Để trống nếu không muốn chia sẻ công khai">
+                  <div class="form-text">Người khác có thể xem Mật khẩu này khi nhập mã tại trang <b>/secret</b></div>
+              </div>
+              <div class="mb-3">
                   <label class="form-label fw-semibold text-secondary">Ghi chú</label>
                   <textarea name="notes" class="form-control bg-body-tertiary" rows="2" placeholder="Thông tin thêm..."></textarea>
               </div>
@@ -365,6 +375,11 @@
                   <input type="hidden" name="url" id="final_url_<%= p.id %>">
               </div>
               <div class="mb-3">
+                  <label class="form-label fw-semibold text-secondary"><ion-icon name="key-outline"></ion-icon> Mã Chia Sẻ Bí Mật</label>
+                  <input type="text" name="secret_code" class="form-control bg-body-tertiary" value="<%= p.secret_code || '' %>" placeholder="Để trống nếu không muốn chia sẻ công khai">
+                  <div class="form-text">Người khác có thể xem Mật khẩu này khi nhập mã tại trang <b>/secret</b></div>
+              </div>
+              <div class="mb-3">
                   <label class="form-label fw-semibold text-secondary">Ghi chú</label>
                   <textarea name="notes" class="form-control bg-body-tertiary" rows="2"><%= p.notes || '' %></textarea>
               </div>
@@ -456,6 +471,35 @@
 </div>
 <% } %>
 
+<!-- Modal Upload CSV -->
+<div class="modal fade" id="uploadCsvModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg rounded-4">
+      <div class="modal-header border-bottom-0 pb-0">
+        <h5 class="modal-title fw-bold text-warning"><ion-icon name="cloud-upload"></ion-icon> Nhập dữ liệu hàng loạt</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+          <div class="alert alert-info py-2" style="font-size: 0.9em;">
+              <ion-icon name="information-circle"></ion-icon> Tải lên file CSV chứa các cột: <b>Title, Username, Password, URL, Notes, SecretCode</b>
+          </div>
+          <div class="mb-3">
+              <input class="form-control bg-body-tertiary" type="file" id="csvFileInput" accept=".csv">
+          </div>
+          <div id="uploadProgress" class="d-none">
+              <div class="progress mb-2" style="height: 10px;">
+                  <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" id="uploadProgressBar" style="width: 0%"></div>
+              </div>
+              <p class="text-center text-muted small mb-0" id="uploadStatusText">Đang xử lý...</p>
+          </div>
+      </div>
+      <div class="modal-footer border-top-0 pt-0">
+          <button type="button" class="btn btn-warning w-100 fw-bold" onclick="processCSV()"><ion-icon name="play"></ion-icon> Bắt Đầu Nhập</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -505,6 +549,73 @@
             });
             
             document.getElementById('final_url_' + id).value = compiled.join(', ');
+        }
+
+        function processCSV() {
+            const fileInput = document.getElementById('csvFileInput');
+            if (!fileInput.files.length) {
+                alert('Vui lòng chọn một file CSV!');
+                return;
+            }
+            
+            const progress = document.getElementById('uploadProgress');
+            const bar = document.getElementById('uploadProgressBar');
+            const status = document.getElementById('uploadStatusText');
+            
+            progress.classList.remove('d-none');
+            bar.style.width = '20%';
+            status.innerText = 'Đang đọc file...';
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split('\n').filter(line => line.trim() !== '');
+                
+                // Giả định dòng đầu là Header, bỏ qua
+                let passwords = [];
+                for (let i = 1; i < lines.length; i++) {
+                    // Split theo dấu phẩy, xử lý cơ bản (không cover ngoặc kép phức tạp)
+                    const cols = lines[i].split(',').map(c => c.trim());
+                    if (cols.length >= 1) {
+                        passwords.push({
+                            title: cols[0] || 'Unknown',
+                            acc_username: cols[1] || '',
+                            password: cols[2] || '',
+                            url: cols[3] || '',
+                            notes: cols[4] || '',
+                            secret_code: cols[5] || ''
+                        });
+                    }
+                }
+                
+                bar.style.width = '50%';
+                status.innerText = `Đang gửi ${passwords.length} dòng lên Server...`;
+                
+                fetch('/bulk_add_passwords', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(passwords)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    bar.style.width = '100%';
+                    bar.classList.replace('bg-warning', 'bg-success');
+                    if (data.success) {
+                        status.innerText = `Thành công: Đã nhập ${data.count} tài khoản! Tải lại trang...`;
+                        setTimeout(() => window.location.reload(), 1500);
+                    } else {
+                        status.innerText = `Lỗi: ${data.error}`;
+                        bar.classList.replace('bg-success', 'bg-danger');
+                    }
+                })
+                .catch(err => {
+                    status.innerText = 'Lỗi kết nối!';
+                    bar.classList.replace('bg-warning', 'bg-danger');
+                });
+            };
+            reader.readAsText(fileInput.files[0]);
         }
     </script>
 </body>
