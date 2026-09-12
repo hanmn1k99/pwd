@@ -60,9 +60,7 @@
         <h4 class="mb-0 text-secondary fw-bold d-flex align-items-center"><ion-icon name="folder-open" class="me-2"></ion-icon> Kho Tài Khoản</h4>
         <% if (user.is_admin) { %>
         <div>
-            <button class="btn btn-outline-primary shadow-sm fw-bold border-2" data-bs-toggle="modal" data-bs-target="#addPasswordModal">
-                <ion-icon name="add-circle"></ion-icon> Thêm Tài Khoản
-            </button>
+            
             <button class="btn btn-outline-success shadow-sm ms-2 fw-bold border-2" data-bs-toggle="modal" data-bs-target="#addUserModal">
                 <ion-icon name="people"></ion-icon> Quản lý User
             </button>
@@ -89,7 +87,14 @@
       <!-- Internal Tab -->
       <div class="tab-pane fade show active" id="internal-tab-pane" role="tabpanel">
         <!-- Passwords Grid -->
-        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mb-5">
+        <div class="d-flex justify-content-end mb-3">
+              <% if (user.is_admin) { %>
+              <button class="btn btn-outline-primary shadow-sm fw-bold border-2" data-bs-toggle="modal" data-bs-target="#addInternalModal">
+                  <ion-icon name="add-circle"></ion-icon> Thêm Mới Nội Bộ
+              </button>
+              <% } %>
+          </div>
+          <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mb-5">
             <% if (internalPass.length > 0) { %>
                 <% internalPass.forEach(p => { %>
                 <div class="col">
@@ -256,25 +261,17 @@
     </div> <!-- End tab-content -->
 
 <% if (user.is_admin) { %>
-<!-- Add Password Modal -->
-<div class="modal fade" id="addPasswordModal" tabindex="-1">
+<!-- Add Internal Modal -->
+<div class="modal fade" id="addInternalModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content rounded-4 border-0 shadow-lg">
       <div class="modal-header border-bottom-0">
-        <h5 class="modal-title fw-bold text-<%= config.THEME_COLOR %>"><ion-icon name="add-circle"></ion-icon> Thêm Tài Khoản Lưu Trữ</h5>
+        <h5 class="modal-title fw-bold text-<%= config.THEME_COLOR %>"><ion-icon name="shield-checkmark"></ion-icon> Thêm Tài Khoản Nội Bộ</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <form action="/add_password" autocomplete="off" method="POST" onsubmit="compileUrl('new')">
+      <form action="/add_password" method="POST" autocomplete="off" onsubmit="compileUrl('new_int')">
           <div class="modal-body py-0">
-              <div class="mb-4 mt-3">
-                  <div class="btn-group w-100 shadow-sm" role="group">
-                      <input type="radio" class="btn-check" name="is_public_new" id="type_internal_new" autocomplete="off" checked onchange="toggleFormType(this, 'new')">
-                      <label class="btn btn-outline-secondary fw-semibold" for="type_internal_new"><ion-icon name="shield-checkmark"></ion-icon> Chế độ Nội Bộ</label>
-
-                      <input type="radio" class="btn-check" name="is_public_new" id="type_public_new" autocomplete="off" onchange="toggleFormType(this, 'new')">
-                      <label class="btn btn-outline-success fw-semibold" for="type_public_new"><ion-icon name="share-social"></ion-icon> Chế độ Công Khai</label>
-                  </div>
-              </div>
+              <input type="hidden" name="is_public_new" value="0">
               <div class="mb-3">
                   <label class="form-label fw-semibold text-secondary">Tên hệ thống</label>
                   <input type="text" name="title" class="form-control" placeholder="VD: Facebook Công ty, Gmail..." required>
@@ -289,36 +286,31 @@
                       <input type="text" name="password" class="form-control" required autocomplete="new-password">
                   </div>
               </div>
-              <div class="mb-3 url-section" <%= (typeof p !== "undefined" && p.secret_code && p.secret_code.trim() !== "") ? 'style="display:none;"' : "" %>>
+              <div class="mb-3 url-section">
                   <label class="form-label fw-semibold text-secondary mb-1">Cấu hình Đường dẫn (URL)</label>
                   <div class="mb-3">
                       <div class="btn-group btn-group-sm w-100 shadow-sm" role="group">
-                          <input type="radio" class="btn-check" name="protocol_new" id="proto_https_new" value="https://" checked>
-                          <label class="btn btn-outline-success" for="proto_https_new"><ion-icon name="lock-closed"></ion-icon> HTTPS (Bảo mật)</label>
-                          <input type="radio" class="btn-check" name="protocol_new" id="proto_http_new" value="http://">
-                          <label class="btn btn-outline-info" for="proto_http_new"><ion-icon name="globe"></ion-icon> HTTP (Nội bộ)</label>
+                          <input type="radio" class="btn-check" name="protocol_new_int" id="proto_https_new_int" value="https://" checked>
+                          <label class="btn btn-outline-success" for="proto_https_new_int"><ion-icon name="lock-closed"></ion-icon> HTTPS (Bảo mật)</label>
+                          <input type="radio" class="btn-check" name="protocol_new_int" id="proto_http_new_int" value="http://">
+                          <label class="btn btn-outline-info" for="proto_http_new_int"><ion-icon name="globe"></ion-icon> HTTP (Nội bộ)</label>
                       </div>
                   </div>
-                  <div id="link-container-new">
+                  <div id="link-container-new_int">
                       <div class="input-group mb-2 link-row">
                           <input type="text" class="form-control link-name" placeholder="Tên">
                           <input type="text" class="form-control link-url" placeholder="Link">
                           <button class="btn btn-outline-danger btn-remove-link" type="button" onclick="this.parentElement.remove()"><ion-icon name="trash" class="d-flex"></ion-icon></button>
                       </div>
                   </div>
-                  <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addLinkRow('new')"><ion-icon name="add" class="align-middle"></ion-icon> Thêm Link</button>
-                  <input type="hidden" name="url" id="final_url_new">
+                  <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addLinkRow('new_int')"><ion-icon name="add" class="align-middle"></ion-icon> Thêm Link</button>
+                  <input type="hidden" name="url" id="final_url_new_int">
               </div>
-              <div class="mb-3 secret-section" <%= (typeof p === "undefined" || !p.secret_code || p.secret_code.trim() === "") ? 'style="display:none;"' : "" %>>
-                  <label class="form-label fw-bold text-<%= config.THEME_COLOR %>"><ion-icon name="key"></ion-icon> Mã Chia Sẻ Bí Mật</label>
-                  <input type="text" name="secret_code" class="form-control" placeholder="Để trống nếu không muốn chia sẻ công khai" autocomplete="off">
-                  <div class="form-text">Người khác có thể xem Mật khẩu này khi nhập mã tại trang <b>/secret</b></div>
-              </div>
-              <div class="mb-3 notes-section" <%= (typeof p !== "undefined" && p.secret_code && p.secret_code.trim() !== "") ? 'style="display:none;"' : "" %>>
+              <div class="mb-3 notes-section">
                   <label class="form-label fw-semibold text-secondary">Ghi chú</label>
                   <textarea name="notes" class="form-control" rows="2" placeholder="Thông tin thêm..."></textarea>
               </div>
-              <div class="mb-3 users-section" <%= (typeof p !== "undefined" && p.secret_code && p.secret_code.trim() !== "") ? 'style="display:none;"' : "" %>>
+              <div class="mb-3 users-section">
                   <label class="form-label fw-semibold text-secondary d-block">Phân quyền cho User</label>
                   <div class="d-flex flex-wrap gap-2 border p-2 rounded-3">
                       <% allUsers.forEach(u => { %>
@@ -346,6 +338,46 @@
   </div>
 </div>
 
+<!-- Add Public Modal -->
+<div class="modal fade" id="addPublicModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title fw-bold text-<%= config.THEME_COLOR %>"><ion-icon name="share-social"></ion-icon> Thêm Tài Khoản Công Khai</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form action="/add_password" method="POST" autocomplete="off">
+          <div class="modal-body py-0">
+              <input type="hidden" name="is_public_new" value="1">
+              <div class="mb-3">
+                  <label class="form-label fw-semibold text-secondary">Tên hệ thống</label>
+                  <input type="text" name="title" class="form-control" placeholder="VD: Dự án A..." required>
+              </div>
+              <div class="row">
+                  <div class="col-md-6 mb-3">
+                      <label class="form-label fw-semibold text-secondary">Tài khoản</label>
+                      <input type="text" name="acc_username" class="form-control" autocomplete="off">
+                  </div>
+                  <div class="col-md-6 mb-3">
+                      <label class="form-label fw-semibold text-secondary">Mật khẩu</label>
+                      <input type="text" name="password" class="form-control" required autocomplete="new-password">
+                  </div>
+              </div>
+              <div class="mb-3 secret-section">
+                  <label class="form-label fw-bold text-<%= config.THEME_COLOR %>"><ion-icon name="key"></ion-icon> Mã Chia Sẻ Bí Mật</label>
+                  <input type="text" name="secret_code" class="form-control" placeholder="Bắt buộc nhập mã chia sẻ" autocomplete="off" required>
+                  <div class="form-text">Người khác có thể xem Mật khẩu này khi nhập mã tại trang <b>/secret</b></div>
+              </div>
+          </div>
+          <div class="modal-footer border-top-0 pt-3 mt-2">
+            <button type="button" class="btn btn-outline-secondary fw-semibold border-2" data-bs-dismiss="modal">Hủy</button>
+            <button type="submit" class="btn btn-outline-<%= config.THEME_COLOR %> px-4 fw-bold shadow-sm border-2"><ion-icon name="save"></ion-icon> Lưu ngay</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <% passwords.forEach(p => { %>
 <!-- Edit Password Modal for <%= p.id %> -->
 <div class="modal fade" id="editPasswordModal-<%= p.id %>" tabindex="-1">
@@ -355,18 +387,10 @@
         <h5 class="modal-title fw-bold text-primary"><ion-icon name="create"></ion-icon> Sửa Tài Khoản</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <form autocomplete="off" action="/edit_password/<%= p.id %>" method="POST" onsubmit="compileUrl('<%= p.id %>')">
+      <% let isPub = (p.secret_code && p.secret_code.trim() !== ''); %>
+      <form autocomplete="off" action="/edit_password/<%= p.id %>" method="POST" <% if(!isPub) { %>onsubmit="compileUrl('<%= p.id %>')"<% } %>>
           <div class="modal-body py-0">
-              <% let isPub = (p.secret_code && p.secret_code.trim() !== ''); %>
-              <div class="mb-4 mt-3">
-                  <div class="btn-group w-100 shadow-sm" role="group">
-                      <input type="radio" class="btn-check" name="is_public_<%= p.id %>" id="type_internal_<%= p.id %>" autocomplete="off" <%= !isPub ? 'checked' : '' %> onchange="toggleFormType(this, '<%= p.id %>')">
-                      <label class="btn btn-outline-secondary fw-semibold" for="type_internal_<%= p.id %>"><ion-icon name="shield-checkmark"></ion-icon> Chế độ Nội Bộ</label>
-
-                      <input type="radio" class="btn-check" name="is_public_<%= p.id %>" id="type_public_<%= p.id %>" autocomplete="off" <%= isPub ? 'checked' : '' %> onchange="toggleFormType(this, '<%= p.id %>')">
-                      <label class="btn btn-outline-success fw-semibold" for="type_public_<%= p.id %>"><ion-icon name="share-social"></ion-icon> Chế độ Công Khai</label>
-                  </div>
-              </div>
+              <input type="hidden" name="is_public_<%= p.id %>" value="<%= isPub ? '1' : '0' %>">
               <div class="mb-3">
                   <label class="form-label fw-semibold text-secondary">Tên hệ thống</label>
                   <input type="text" name="title" class="form-control" value="<%= p.title %>" required>
@@ -381,7 +405,10 @@
                       <input type="text" name="password" class="form-control" placeholder="Bỏ trống = Không đổi" autocomplete="new-password">
                   </div>
               </div>
-              <div class="mb-3">
+              
+              <% if (!isPub) { %>
+              <!-- INTERNAL ONLY FIELDS -->
+              <div class="mb-3 url-section">
                   <label class="form-label fw-semibold text-secondary mb-1">Cấu hình Đường dẫn (URL)</label>
                   <div class="mb-3">
                       <% 
@@ -430,16 +457,13 @@
                   <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addLinkRow('<%= p.id %>')"><ion-icon name="add" class="align-middle"></ion-icon> Thêm Link</button>
                   <input type="hidden" name="url" id="final_url_<%= p.id %>">
               </div>
-              <div class="mb-3 secret-section" <%= (typeof p === "undefined" || !p.secret_code || p.secret_code.trim() === "") ? 'style="display:none;"' : "" %>>
-                  <label class="form-label fw-bold text-<%= config.THEME_COLOR %>"><ion-icon name="key"></ion-icon> Mã Chia Sẻ Bí Mật</label>
-                  <input type="text" name="secret_code" class="form-control" value="<%= p.secret_code || '' %>" placeholder="Để trống nếu không muốn chia sẻ công khai" autocomplete="off">
-                  <div class="form-text">Người khác có thể xem Mật khẩu này khi nhập mã tại trang <b>/secret</b></div>
-              </div>
-              <div class="mb-3 notes-section" <%= (typeof p !== "undefined" && p.secret_code && p.secret_code.trim() !== "") ? 'style="display:none;"' : "" %>>
+              
+              <div class="mb-3 notes-section">
                   <label class="form-label fw-semibold text-secondary">Ghi chú</label>
                   <textarea name="notes" class="form-control" rows="2"><%= p.notes || '' %></textarea>
               </div>
-              <div class="mb-3 users-section" <%= (typeof p !== "undefined" && p.secret_code && p.secret_code.trim() !== "") ? 'style="display:none;"' : "" %>>
+              
+              <div class="mb-3 users-section">
                   <label class="form-label fw-semibold text-secondary d-block">Phân quyền cho User</label>
                   <div class="d-flex flex-wrap gap-2 border p-2 rounded-3">
                       <% allUsers.forEach(u => { %>
@@ -457,6 +481,15 @@
                       <% } %>
                   </div>
               </div>
+              <% } else { %>
+              <!-- PUBLIC ONLY FIELDS -->
+              <div class="mb-3 secret-section">
+                  <label class="form-label fw-bold text-<%= config.THEME_COLOR %>"><ion-icon name="key"></ion-icon> Mã Chia Sẻ Bí Mật</label>
+                  <input type="text" name="secret_code" class="form-control" value="<%= p.secret_code || '' %>" placeholder="Bắt buộc nhập mã chia sẻ" autocomplete="off" required>
+                  <div class="form-text">Người khác có thể xem Mật khẩu này khi nhập mã tại trang <b>/secret</b></div>
+              </div>
+              <% } %>
+
           </div>
           <div class="modal-footer border-top-0 pt-3 mt-2">
             <button type="button" class="btn btn-outline-secondary fw-semibold border-2" data-bs-dismiss="modal">Hủy</button>
@@ -651,31 +684,6 @@
             });
         }
     
-    function toggleFormType(radioBtn, formId) {
-        let isPublic = document.getElementById('type_public_' + formId).checked;
-        let form = radioBtn.closest('form');
-        
-        let urlSec = form.querySelector('.url-section');
-        let notesSec = form.querySelector('.notes-section');
-        let usersSec = form.querySelector('.users-section');
-        let secretSec = form.querySelector('.secret-section');
-        
-        if (isPublic) {
-            if(urlSec) urlSec.style.display = 'none';
-            if(notesSec) notesSec.style.display = 'none';
-            if(usersSec) usersSec.style.display = 'none';
-            if(secretSec) secretSec.style.display = 'block';
-        } else {
-            if(urlSec) urlSec.style.display = 'block';
-            if(notesSec) notesSec.style.display = 'block';
-            if(usersSec) usersSec.style.display = 'block';
-            if(secretSec) {
-                secretSec.style.display = 'none';
-                let input = secretSec.querySelector('input');
-                if(input) input.value = '';
-            }
-        }
-    }
-</script>
+    </script>
 </body>
 </html>
