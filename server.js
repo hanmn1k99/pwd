@@ -249,14 +249,14 @@ app.get('/download_template', requireLogin, (req, res) => {
     // Tạo workbook mẫu
     const wb = xlsx.utils.book_new();
     const ws_data = [
-        ["Title", "Username", "Password", "URL", "Notes", "SecretCode"],
-        ["Server Chính", "admin", "P@ssw0rd123!", "https://minhhan.net", "Server VIP", "MH_S1"],
-        ["Camera Tầng 1", "cam_admin", "Cam@2026", "Camera T1 | 192.168.1.100", "Ghi chú camera", "CAM_T1"]
+        ["Title", "Username", "Password", "SecretCode"],
+        ["Server Chính", "admin", "P@ssw0rd123!", "MH_S1"],
+        ["Camera Tầng 1", "cam_admin", "Cam@2026", "CAM_T1"]
     ];
     const ws = xlsx.utils.aoa_to_sheet(ws_data);
     
     // Chỉnh độ rộng cột cho đẹp
-    ws['!cols'] = [{wch: 20}, {wch: 15}, {wch: 15}, {wch: 35}, {wch: 20}, {wch: 15}];
+    ws['!cols'] = [{wch: 20}, {wch: 20}, {wch: 20}, {wch: 20}];
     xlsx.utils.book_append_sheet(wb, ws, "Passwords");
     
     const buffer = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' });
