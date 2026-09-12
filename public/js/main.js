@@ -22,6 +22,19 @@
         }
     }
 
+    function togglePasswordShared(id, password) {
+        let el = document.getElementById('pw-shared-' + id);
+        let btnIcon = document.getElementById('icon-shared-' + id);
+        
+        if (el.innerText === '••••••••') {
+            el.innerText = password;
+            btnIcon.setAttribute('name', 'eye-off');
+        } else {
+            el.innerText = '••••••••';
+            btnIcon.setAttribute('name', 'eye');
+        }
+    }
+
     function showToast(message, icon = 'checkmark-circle') {
         const toastContainer = document.querySelector('.position-fixed.top-0.end-0');
         if (toastContainer) {
