@@ -264,7 +264,7 @@
         <h5 class="modal-title fw-bold text-<%= config.THEME_COLOR %>"><ion-icon name="add-circle"></ion-icon> Thêm Tài Khoản Lưu Trữ</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <form action="/add_password" method="POST" onsubmit="compileUrl('new')">
+      <form action="/add_password" autocomplete="off" method="POST" onsubmit="compileUrl('new')">
           <div class="modal-body py-0">
               <div class="mb-4 mt-3">
                   <div class="btn-group w-100 shadow-sm" role="group">
@@ -282,11 +282,11 @@
               <div class="row">
                   <div class="col-md-6 mb-3">
                       <label class="form-label fw-semibold text-secondary">Tài khoản</label>
-                      <input type="text" name="acc_username" class="form-control">
+                      <input type="text" name="acc_username" class="form-control" autocomplete="off">
                   </div>
                   <div class="col-md-6 mb-3">
                       <label class="form-label fw-semibold text-secondary">Mật khẩu</label>
-                      <input type="text" name="password" class="form-control" required>
+                      <input type="text" name="password" class="form-control" required autocomplete="new-password">
                   </div>
               </div>
               <div class="mb-3 url-section" <%= (typeof p !== "undefined" && p.secret_code && p.secret_code.trim() !== "") ? 'style="display:none;"' : "" %>>
@@ -311,7 +311,7 @@
               </div>
               <div class="mb-3 secret-section" <%= (typeof p === "undefined" || !p.secret_code || p.secret_code.trim() === "") ? 'style="display:none;"' : "" %>>
                   <label class="form-label fw-bold text-<%= config.THEME_COLOR %>"><ion-icon name="key"></ion-icon> Mã Chia Sẻ Bí Mật</label>
-                  <input type="text" name="secret_code" class="form-control" placeholder="Để trống nếu không muốn chia sẻ công khai">
+                  <input type="text" name="secret_code" class="form-control" placeholder="Để trống nếu không muốn chia sẻ công khai" autocomplete="off">
                   <div class="form-text">Người khác có thể xem Mật khẩu này khi nhập mã tại trang <b>/secret</b></div>
               </div>
               <div class="mb-3 notes-section" <%= (typeof p !== "undefined" && p.secret_code && p.secret_code.trim() !== "") ? 'style="display:none;"' : "" %>>
@@ -355,7 +355,7 @@
         <h5 class="modal-title fw-bold text-primary"><ion-icon name="create"></ion-icon> Sửa Tài Khoản</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <form action="/edit_password/<%= p.id %>" method="POST" onsubmit="compileUrl('<%= p.id %>')">
+      <form autocomplete="off" action="/edit_password/<%= p.id %>" method="POST" onsubmit="compileUrl('<%= p.id %>')">
           <div class="modal-body py-0">
               <% let isPub = (p.secret_code && p.secret_code.trim() !== ''); %>
               <div class="mb-4 mt-3">
@@ -374,11 +374,11 @@
               <div class="row">
                   <div class="col-md-6 mb-3">
                       <label class="form-label fw-semibold text-secondary">Tài khoản</label>
-                      <input type="text" name="acc_username" class="form-control" value="<%= p.acc_username %>">
+                      <input type="text" name="acc_username" class="form-control" value="<%= p.acc_username %>" autocomplete="off">
                   </div>
                   <div class="col-md-6 mb-3">
                       <label class="form-label fw-semibold text-secondary">Mật khẩu mới</label>
-                      <input type="text" name="password" class="form-control" placeholder="Bỏ trống = Không đổi">
+                      <input type="text" name="password" class="form-control" placeholder="Bỏ trống = Không đổi" autocomplete="new-password">
                   </div>
               </div>
               <div class="mb-3">
@@ -432,7 +432,7 @@
               </div>
               <div class="mb-3 secret-section" <%= (typeof p === "undefined" || !p.secret_code || p.secret_code.trim() === "") ? 'style="display:none;"' : "" %>>
                   <label class="form-label fw-bold text-<%= config.THEME_COLOR %>"><ion-icon name="key"></ion-icon> Mã Chia Sẻ Bí Mật</label>
-                  <input type="text" name="secret_code" class="form-control" value="<%= p.secret_code || '' %>" placeholder="Để trống nếu không muốn chia sẻ công khai">
+                  <input type="text" name="secret_code" class="form-control" value="<%= p.secret_code || '' %>" placeholder="Để trống nếu không muốn chia sẻ công khai" autocomplete="off">
                   <div class="form-text">Người khác có thể xem Mật khẩu này khi nhập mã tại trang <b>/secret</b></div>
               </div>
               <div class="mb-3 notes-section" <%= (typeof p !== "undefined" && p.secret_code && p.secret_code.trim() !== "") ? 'style="display:none;"' : "" %>>
