@@ -76,12 +76,12 @@
 %>
 
     <!-- Nav Tabs -->
-    <ul class="nav nav-tabs mb-4" id="passwordTabs" role="tablist">
+    <ul class="nav nav-pills mb-4 d-flex gap-2" id="passwordTabs" role="tablist">
       <li class="nav-item" role="presentation">
-        <button class="nav-link active fw-bold px-4" id="internal-tab" data-bs-toggle="tab" data-bs-target="#internal-tab-pane" type="button" role="tab"><ion-icon name="shield-checkmark" class="me-1"></ion-icon> Nội Bộ (<%= internalPass.length %>)</button>
+        <button class="nav-link active fw-bold px-4 rounded-pill shadow-sm" id="internal-tab" data-bs-toggle="pill" data-bs-target="#internal-tab-pane" type="button" role="tab"><ion-icon name="shield-checkmark" class="me-1"></ion-icon> Nội Bộ (<%= internalPass.length %>)</button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link fw-bold px-4 text-secondary" id="shared-tab" data-bs-toggle="tab" data-bs-target="#shared-tab-pane" type="button" role="tab"><ion-icon name="share-social" class="me-1"></ion-icon> Công Khai (<%= sharedPass.length %>)</button>
+        <button class="nav-link fw-bold px-4 text-secondary rounded-pill border shadow-sm bg-body-tertiary" id="shared-tab" data-bs-toggle="pill" data-bs-target="#shared-tab-pane" type="button" role="tab"><ion-icon name="share-social" class="me-1"></ion-icon> Công Khai (<%= sharedPass.length %>)</button>
       </li>
     </ul>
 
@@ -218,7 +218,7 @@
                     <tr>
                         <td class="ps-4">
                             <div class="d-inline-flex align-items-center">
-                                <span class="badge bg-<%= config.THEME_COLOR %> text-white px-3 py-2 fw-bold shadow-sm font-monospace" id="secret-<%= p.id %>" style="font-size: 0.9em; letter-spacing: 2px; min-width: 90px; text-align: center; display: inline-block;">••••••••</span>
+                                <span class="font-monospace text-body" id="secret-<%= p.id %>" style="font-size: 1.1em; letter-spacing: 2px; min-width: 90px; text-align: center; display: inline-block;">••••••••</span>
                                 <button class="btn btn-sm btn-link text-secondary p-0 ms-2" onclick="toggleSecret('<%= p.id %>', '<%= p.secret_code.replace(/'/g, "\\\\'") %>')" title="Xem/Ẩn Mã Bí Mật">
                                     <ion-icon name="eye" id="icon-secret-<%= p.id %>" class="fs-6"></ion-icon>
                                 </button>
