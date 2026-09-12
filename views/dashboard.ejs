@@ -680,8 +680,30 @@
                 bar.style.width = '100%';
                 bar.classList.replace('bg-<%= config.THEME_COLOR %>', 'bg-success');
                 if (data.success) {
-                    status.innerText = `Thành công: Đã nhập ${data.count} tài khoản! Tải lại trang...`;
-                    setTimeout(() => window.location.reload(), 1500);
+                    status.innerText = `Thành công: Đã nhập ${data.count} tài khoản! Đang cập nhật...`;
+                    fetch(window.location.href)
+                        .then(r => r.text())
+                        .then(newHtml => {
+                            const doc = new DOMParser().parseFromString(newHtml, 'text/html');
+                            document.querySelector('#shared-tab-pane').innerHTML = doc.querySelector('#shared-tab-pane').innerHTML;
+                            document.querySelector('#internal-tab-pane').innerHTML = doc.querySelector('#internal-tab-pane').innerHTML;
+                            document.querySelector('#passwordTabs').innerHTML = doc.querySelector('#passwordTabs').innerHTML;
+                            
+                            setTimeout(() => {
+                                const modal = bootstrap.Modal.getInstance(document.getElementById('uploadCsvModal'));
+                                if(modal) modal.hide();
+                                progress.classList.add('d-none');
+                                fileInput.value = '';
+                                
+                                // Rebind tab events for newly replaced tabs
+                                let tabButtons = document.querySelectorAll('button[data-bs-toggle="pill"]');
+                                tabButtons.forEach(btn => {
+                                    btn.addEventListener('shown.bs.tab', function(e) {
+                                        localStorage.setItem('activeTab', e.target.getAttribute('data-bs-target'));
+                                    });
+                                });
+                            }, 1000);
+                        });
                 } else {
                     status.innerText = `Lỗi: ${data.error}`;
                     bar.classList.replace('bg-success', 'bg-danger');
@@ -693,6 +715,27 @@
             });
         }
     
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Tab persistence
+            let activeTab = localStorage.getItem('activeTab');
+            if (activeTab) {
+                let tabNode = document.querySelector(`button[data-bs-target="${activeTab}"]`);
+                if (tabNode) {
+                    let tab = new bootstrap.Tab(tabNode);
+                    tab.show();
+                }
+            }
+
+            let tabButtons = document.querySelectorAll('button[data-bs-toggle="pill"]');
+            tabButtons.forEach(btn => {
+                btn.addEventListener('shown.bs.tab', function(e) {
+                    localStorage.setItem('activeTab', e.target.getAttribute('data-bs-target'));
+                });
+            });
+        });
     </script>
 </body>
 </html>
