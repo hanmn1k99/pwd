@@ -266,6 +266,15 @@
       </div>
       <form action="/add_password" method="POST" onsubmit="compileUrl('new')">
           <div class="modal-body py-0">
+              <div class="mb-4 mt-3">
+                  <div class="btn-group w-100 shadow-sm" role="group">
+                      <input type="radio" class="btn-check" name="is_public_new" id="type_internal_new" autocomplete="off" checked onchange="toggleFormType(this, 'new')">
+                      <label class="btn btn-outline-secondary fw-semibold" for="type_internal_new"><ion-icon name="shield-checkmark"></ion-icon> Chế độ Nội Bộ</label>
+
+                      <input type="radio" class="btn-check" name="is_public_new" id="type_public_new" autocomplete="off" onchange="toggleFormType(this, 'new')">
+                      <label class="btn btn-outline-success fw-semibold" for="type_public_new"><ion-icon name="share-social"></ion-icon> Chế độ Công Khai</label>
+                  </div>
+              </div>
               <div class="mb-3">
                   <label class="form-label fw-semibold text-secondary">Tên hệ thống</label>
                   <input type="text" name="title" class="form-control" placeholder="VD: Facebook Công ty, Gmail..." required>
@@ -280,7 +289,7 @@
                       <input type="text" name="password" class="form-control" required>
                   </div>
               </div>
-              <div class="mb-3">
+              <div class="mb-3 url-section" <%= (typeof p !== "undefined" && p.secret_code && p.secret_code.trim() !== "") ? 'style="display:none;"' : "" %>>
                   <label class="form-label fw-semibold text-secondary mb-1">Cấu hình Đường dẫn (URL)</label>
                   <div class="mb-3">
                       <div class="btn-group btn-group-sm w-100 shadow-sm" role="group">
@@ -300,16 +309,16 @@
                   <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addLinkRow('new')"><ion-icon name="add" class="align-middle"></ion-icon> Thêm Link</button>
                   <input type="hidden" name="url" id="final_url_new">
               </div>
-              <div class="mb-3">
+              <div class="mb-3 secret-section" <%= (typeof p === "undefined" || !p.secret_code || p.secret_code.trim() === "") ? 'style="display:none;"' : "" %>>
                   <label class="form-label fw-bold text-<%= config.THEME_COLOR %>"><ion-icon name="key"></ion-icon> Mã Chia Sẻ Bí Mật</label>
                   <input type="text" name="secret_code" class="form-control" placeholder="Để trống nếu không muốn chia sẻ công khai">
                   <div class="form-text">Người khác có thể xem Mật khẩu này khi nhập mã tại trang <b>/secret</b></div>
               </div>
-              <div class="mb-3">
+              <div class="mb-3 notes-section" <%= (typeof p !== "undefined" && p.secret_code && p.secret_code.trim() !== "") ? 'style="display:none;"' : "" %>>
                   <label class="form-label fw-semibold text-secondary">Ghi chú</label>
                   <textarea name="notes" class="form-control" rows="2" placeholder="Thông tin thêm..."></textarea>
               </div>
-              <div class="mb-3">
+              <div class="mb-3 users-section" <%= (typeof p !== "undefined" && p.secret_code && p.secret_code.trim() !== "") ? 'style="display:none;"' : "" %>>
                   <label class="form-label fw-semibold text-secondary d-block">Phân quyền cho User</label>
                   <div class="d-flex flex-wrap gap-2 border p-2 rounded-3">
                       <% allUsers.forEach(u => { %>
@@ -348,6 +357,16 @@
       </div>
       <form action="/edit_password/<%= p.id %>" method="POST" onsubmit="compileUrl('<%= p.id %>')">
           <div class="modal-body py-0">
+              <% let isPub = (p.secret_code && p.secret_code.trim() !== ''); %>
+              <div class="mb-4 mt-3">
+                  <div class="btn-group w-100 shadow-sm" role="group">
+                      <input type="radio" class="btn-check" name="is_public_<%= p.id %>" id="type_internal_<%= p.id %>" autocomplete="off" <%= !isPub ? 'checked' : '' %> onchange="toggleFormType(this, '<%= p.id %>')">
+                      <label class="btn btn-outline-secondary fw-semibold" for="type_internal_<%= p.id %>"><ion-icon name="shield-checkmark"></ion-icon> Chế độ Nội Bộ</label>
+
+                      <input type="radio" class="btn-check" name="is_public_<%= p.id %>" id="type_public_<%= p.id %>" autocomplete="off" <%= isPub ? 'checked' : '' %> onchange="toggleFormType(this, '<%= p.id %>')">
+                      <label class="btn btn-outline-success fw-semibold" for="type_public_<%= p.id %>"><ion-icon name="share-social"></ion-icon> Chế độ Công Khai</label>
+                  </div>
+              </div>
               <div class="mb-3">
                   <label class="form-label fw-semibold text-secondary">Tên hệ thống</label>
                   <input type="text" name="title" class="form-control" value="<%= p.title %>" required>
@@ -411,16 +430,16 @@
                   <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addLinkRow('<%= p.id %>')"><ion-icon name="add" class="align-middle"></ion-icon> Thêm Link</button>
                   <input type="hidden" name="url" id="final_url_<%= p.id %>">
               </div>
-              <div class="mb-3">
+              <div class="mb-3 secret-section" <%= (typeof p === "undefined" || !p.secret_code || p.secret_code.trim() === "") ? 'style="display:none;"' : "" %>>
                   <label class="form-label fw-bold text-<%= config.THEME_COLOR %>"><ion-icon name="key"></ion-icon> Mã Chia Sẻ Bí Mật</label>
                   <input type="text" name="secret_code" class="form-control" value="<%= p.secret_code || '' %>" placeholder="Để trống nếu không muốn chia sẻ công khai">
                   <div class="form-text">Người khác có thể xem Mật khẩu này khi nhập mã tại trang <b>/secret</b></div>
               </div>
-              <div class="mb-3">
+              <div class="mb-3 notes-section" <%= (typeof p !== "undefined" && p.secret_code && p.secret_code.trim() !== "") ? 'style="display:none;"' : "" %>>
                   <label class="form-label fw-semibold text-secondary">Ghi chú</label>
                   <textarea name="notes" class="form-control" rows="2"><%= p.notes || '' %></textarea>
               </div>
-              <div class="mb-3">
+              <div class="mb-3 users-section" <%= (typeof p !== "undefined" && p.secret_code && p.secret_code.trim() !== "") ? 'style="display:none;"' : "" %>>
                   <label class="form-label fw-semibold text-secondary d-block">Phân quyền cho User</label>
                   <div class="d-flex flex-wrap gap-2 border p-2 rounded-3">
                       <% allUsers.forEach(u => { %>
@@ -631,6 +650,32 @@
                 bar.classList.replace('bg-<%= config.THEME_COLOR %>', 'bg-danger');
             });
         }
-    </script>
+    
+    function toggleFormType(radioBtn, formId) {
+        let isPublic = document.getElementById('type_public_' + formId).checked;
+        let form = radioBtn.closest('form');
+        
+        let urlSec = form.querySelector('.url-section');
+        let notesSec = form.querySelector('.notes-section');
+        let usersSec = form.querySelector('.users-section');
+        let secretSec = form.querySelector('.secret-section');
+        
+        if (isPublic) {
+            if(urlSec) urlSec.style.display = 'none';
+            if(notesSec) notesSec.style.display = 'none';
+            if(usersSec) usersSec.style.display = 'none';
+            if(secretSec) secretSec.style.display = 'block';
+        } else {
+            if(urlSec) urlSec.style.display = 'block';
+            if(notesSec) notesSec.style.display = 'block';
+            if(usersSec) usersSec.style.display = 'block';
+            if(secretSec) {
+                secretSec.style.display = 'none';
+                let input = secretSec.querySelector('input');
+                if(input) input.value = '';
+            }
+        }
+    }
+</script>
 </body>
 </html>
