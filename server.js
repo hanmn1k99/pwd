@@ -250,7 +250,7 @@ app.get('/download_template', requireLogin, (req, res) => {
     const ws_data = [
         ["Title", "Username", "Password", "URL", "Notes", "SecretCode"],
         ["Server Chính", "admin", "P@ssw0rd123!", "https://minhhan.net", "Server VIP", "MH_S1"],
-        ["Camera Tầng 1", "cam_admin", "Cam@2026", "Camera T1 | 192.168.1.100", "Ghi chú camera", ""]
+        ["Camera Tầng 1", "cam_admin", "Cam@2026", "Camera T1 | 192.168.1.100", "Ghi chú camera", "CAM_T1"]
     ];
     const ws = xlsx.utils.aoa_to_sheet(ws_data);
     
@@ -290,6 +290,11 @@ app.post('/bulk_upload_excel', requireLogin, upload.single('excelFile'), (req, r
                 const url = row['URL'] || '';
                 const notes = row['Notes'] || '';
                 const secret = row['SecretCode'] || '';
+                
+                if (!secret.trim()) {
+                    errors.push(`Dòng ${index + 2}: Thiếu Mã Chia Sẻ (SecretCode bắt buộc cho upload công khai)`);
+                    return;
+                }
                 
                 const enc = encrypt(pwd.toString());
                 

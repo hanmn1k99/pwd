@@ -85,7 +85,7 @@
         <button class="nav-link active fw-bold px-4 rounded-top-3" id="internal-tab" data-bs-toggle="tab" data-bs-target="#internal-tab-pane" type="button" role="tab" style="background-color: transparent;"><ion-icon name="shield-checkmark" class="me-1"></ion-icon> Nội Bộ (<%= internalPass.length %>)</button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link fw-bold px-4 text-warning rounded-top-3" id="shared-tab" data-bs-toggle="tab" data-bs-target="#shared-tab-pane" type="button" role="tab" style="background-color: transparent;"><ion-icon name="share-social" class="me-1"></ion-icon> Công Khai (<%= sharedPass.length %>)</button>
+        <button class="nav-link fw-bold px-4 text-secondary rounded-top-3" id="shared-tab" data-bs-toggle="tab" data-bs-target="#shared-tab-pane" type="button" role="tab" style="background-color: transparent;"><ion-icon name="share-social" class="me-1"></ion-icon> Công Khai (<%= sharedPass.length %>)</button>
       </li>
     </ul>
 
@@ -198,6 +198,13 @@
 
       <!-- Shared Tab -->
       <div class="tab-pane fade" id="shared-tab-pane" role="tabpanel">
+        <% if (user.is_admin) { %>
+        <div class="d-flex justify-content-end mb-3">
+            <button class="btn btn-outline-success btn-sm fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#uploadCsvModal">
+                <ion-icon name="cloud-upload"></ion-icon> Nhập File Excel (Hàng Loạt)
+            </button>
+        </div>
+        <% } %>
         <% if (sharedPass.length > 0) { %>
         <div class="table-responsive bg-body-tertiary rounded-4 border border-secondary-subtle shadow-sm mb-5">
             <table class="table table-hover align-middle mb-0">
@@ -213,16 +220,15 @@
                 <tbody>
                     <% sharedPass.forEach(p => { %>
                     <tr>
-                        <td class="ps-4"><span class="badge bg-warning text-dark px-3 py-2 fw-bold" style="font-size: 0.9em; letter-spacing: 1px;"><%= p.secret_code %></span></td>
+                        <td class="ps-4"><span class="badge bg-<%= config.THEME_COLOR %> text-white px-3 py-2 fw-bold shadow-sm" style="font-size: 0.9em; letter-spacing: 1px;"><%= p.secret_code %></span></td>
                         <td class="fw-bold text-<%= config.THEME_COLOR %>"><%= p.title %></td>
                         <td><!--email_off--><%= p.acc_username %><!--/email_off--></td>
                         <td>
                             <span class="font-monospace text-body" id="pw-shared-<%= p.id %>" style="letter-spacing: 2px;">••••••••</span>
                         </td>
                         <td class="text-end pe-4">
-                            <button class="btn btn-sm btn-outline-secondary border-0" onclick="copyToClipboard('<%= p.acc_username.replace(/'/g, "\\'") %>')" title="Copy tài khoản"><ion-icon name="person" class="icon-only fs-6"></ion-icon></button>
+                            <button class="btn btn-sm btn-outline-secondary border-0" onclick="copyToClipboard('<%= p.secret_code %>')" title="Copy Mã Bí Mật"><ion-icon name="key" class="icon-only fs-6"></ion-icon></button>
                             <button class="btn btn-sm btn-outline-secondary border-0" onclick="togglePasswordShared('<%= p.id %>', '<%= p.decrypted.replace(/'/g, "\\'") %>')" title="Xem mật khẩu"><ion-icon name="eye" id="icon-shared-<%= p.id %>" class="icon-only fs-6"></ion-icon></button>
-                            <button class="btn btn-sm btn-outline-secondary border-0" onclick="copyToClipboard('<%= p.decrypted.replace(/'/g, "\\'") %>')" title="Copy mật khẩu"><ion-icon name="copy" class="icon-only fs-6"></ion-icon></button>
                             <% if (user.is_admin) { %>
                             <button class="btn btn-sm btn-outline-primary border-0 ms-1" data-bs-toggle="modal" data-bs-target="#editPasswordModal-<%= p.id %>" title="Sửa"><ion-icon name="create" class="icon-only fs-6"></ion-icon></button>
                             <form action="/delete_password/<%= p.id %>" method="POST" class="d-inline" onsubmit="return confirm('Xóa mật khẩu này?');">
@@ -512,6 +518,9 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
+          <div class="alert alert-info py-2" style="font-size: 0.85em;">
+              <ion-icon name="information-circle"></ion-icon> <strong>Lưu ý:</strong> Tính năng này chỉ dùng để chia sẻ hàng loạt. <strong>Cột SecretCode là bắt buộc</strong>, các dòng để trống sẽ bị bỏ qua.
+          </div>
           <div class="d-flex justify-content-between align-items-center mb-3">
               <span class="text-secondary small">Vui lòng sử dụng file mẫu chuẩn:</span>
               <a href="/download_template" class="btn btn-sm btn-outline-success"><ion-icon name="download"></ion-icon> Tải File Mẫu (.xlsx)</a>
