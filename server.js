@@ -411,7 +411,9 @@ app.get('/secret', (req, res) => {
     const code = req.session.secret_code;
     
     if (!code) {
-        return res.render('secret', { passwordData: null, error: req.session.secret_error || null });
+        let errStr = req.session.secret_error || null;
+        req.session.secret_error = null; // Clear error on load
+        return res.render('secret', { passwordData: null, error: errStr });
     }
     
     db.all("SELECT * FROM passwords WHERE LOWER(TRIM(secret_code)) = LOWER(?)", [code], (err, rows) => {
@@ -421,6 +423,9 @@ app.get('/secret', (req, res) => {
         }
         
         req.session.secret_error = null;
+        // Xóa luôn session code sau khi đọc để nếu ấn F5 sẽ quay về trang nhập
+        req.session.secret_code = null;
+        
         // Decrypt passwords
         rows.forEach(row => {
             let dec = '';
