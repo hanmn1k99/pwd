@@ -229,21 +229,59 @@
                             </div>
                         </div>
                         
-                        <div class="mb-0">
+                        <div class="mb-3">
                             <small class="text-muted d-block text-uppercase fw-bold mb-2" style="font-size: 0.70em; letter-spacing: 1px;"><ion-icon name="lock-closed"></ion-icon> Mật khẩu</small>
                             <div class="d-flex align-items-center bg-body-tertiary p-2 rounded-3 border border-secondary-subtle">
                                 <span class="text-body font-monospace flex-grow-1 ms-2" id="pw-shared-<%= p.id %>" style="font-size: 0.95em; letter-spacing: 2px;">••••••••</span>
-                                <button class="btn btn-sm btn-outline-secondary border-0 me-1" onclick="togglePasswordShared('<%= p.id %>', '<%= p.decrypted.replace(/'/g, "\'") %>')" title="Xem/Ẩn"><ion-icon name="eye" id="icon-shared-<%= p.id %>" class="icon-only"></ion-icon></button>
-                                <button class="btn btn-sm btn-outline-secondary border-0" onclick="copyToClipboard('<%= p.decrypted %>')" title="Copy"><ion-icon name="copy" class="icon-only"></ion-icon></button>
+                                <button class="btn btn-sm btn-outline-secondary border-0 me-1" onclick="togglePasswordShared('<%= p.id %>', '<%= p.decrypted.replace(/'/g, "\\'") %>')" title="Xem/Ẩn"><ion-icon name="eye" id="icon-shared-<%= p.id %>" class="icon-only"></ion-icon></button>
+                                <button class="btn btn-sm btn-outline-secondary border-0" onclick="copyToClipboard('<%= p.decrypted.replace(/'/g, "\\'") %>')" title="Copy"><ion-icon name="copy" class="icon-only"></ion-icon></button>
                             </div>
                         </div>
+                        
+                        <% if (p.url) { %>
+                        <div class="mb-3 d-flex flex-wrap gap-1">
+                            <% 
+                              let items = p.url.split(/[\,\;\n]+/).filter(u => u.trim() !== '');
+                              items.forEach(item => {
+                                let name = '';
+                                let rawUrl = '';
+                                if (item.includes('|')) {
+                                    let parts = item.split('|');
+                                    let p0 = parts[0].trim();
+                                    let p1 = parts.slice(1).join('|').trim();
+                                    let p0IsUrl = /^https?:\/\//i.test(p0) || (p0.includes('.') && !p0.includes(' '));
+                                    let p1IsUrl = /^https?:\/\//i.test(p1) || (p1.includes('.') && !p1.includes(' '));
+                                    if (p0IsUrl && !p1IsUrl) { rawUrl = p0; name = p1; } else { rawUrl = p1; name = p0; }
+                                } else {
+                                    rawUrl = item.trim();
+                                    name = rawUrl.replace(/^https?:\/\//i, '');
+                                }
+                                let fixedUrl = rawUrl;
+                                if (!fixedUrl.startsWith('http://') && !fixedUrl.startsWith('https://')) fixedUrl = 'http://' + fixedUrl;
+                            %>
+                            <a href="<%= fixedUrl %>" target="_blank" class="badge bg-body-secondary text-secondary text-decoration-none d-inline-flex align-items-center py-1 px-2 border border-secondary-subtle fw-medium rounded-pill shadow-sm" style="font-size: 0.85em;">
+                                <ion-icon name="link-outline" class="me-1 fs-6"></ion-icon> <%= name %>
+                            </a>
+                            <% }); %>
+                        </div>
+                        <% } %>
+                        
+                        <% if (p.notes) { %>
+                        <div class="mb-0">
+                            <small class="text-muted d-block text-uppercase fw-bold mb-2" style="font-size: 0.70em; letter-spacing: 1px;"><ion-icon name="document-text"></ion-icon> Ghi chú</small>
+                            <div class="bg-body-tertiary p-2 rounded-3 border border-secondary-subtle">
+                                <span class="text-body small"><%= p.notes %></span>
+                            </div>
+                        </div>
+                        <% } %>
+                    </div>
                     </div>
                     
                     <div class="card-footer bg-body-tertiary border-top px-4 pt-3 pb-3 rounded-bottom-4 mt-auto">
                         <small class="text-muted d-block text-uppercase fw-bold mb-2" style="font-size: 0.70em; letter-spacing: 1px;"><ion-icon name="key"></ion-icon> Mã Bí Mật</small>
                         <div class="d-flex align-items-center bg-body p-2 rounded-3 border border-secondary-subtle shadow-sm">
                             <span class="text-primary fw-bold font-monospace flex-grow-1 ms-2" id="secret-<%= p.id %>" style="font-size: 1.05em; letter-spacing: 2px;">••••••••</span>
-                            <button class="btn btn-sm btn-outline-secondary border-0 me-1" onclick="toggleSecret('<%= p.id %>', '<%= p.secret_code.replace(/'/g, "\'") %>')" title="Xem/Ẩn Mã"><ion-icon name="eye" id="icon-secret-<%= p.id %>" class="icon-only"></ion-icon></button>
+                            <button class="btn btn-sm btn-outline-secondary border-0 me-1" onclick="toggleSecret('<%= p.id %>', '<%= p.secret_code.replace(/'/g, "\\'") %>')" title="Xem/Ẩn Mã"><ion-icon name="eye" id="icon-secret-<%= p.id %>" class="icon-only"></ion-icon></button>
                             <button class="btn btn-sm btn-outline-primary border-0" onclick="copyToClipboard('<%= p.secret_code %>')" title="Copy Mã"><ion-icon name="copy" class="icon-only"></ion-icon></button>
                         </div>
                     </div>

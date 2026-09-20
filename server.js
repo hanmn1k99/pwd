@@ -252,14 +252,14 @@ app.get('/download_template', requireLogin, (req, res) => {
     // Tạo workbook mẫu
     const wb = xlsx.utils.book_new();
     const ws_data = [
-        ["Title", "Username", "Password", "SecretCode"],
-        ["Server Chính", "admin", "P@ssw0rd123!", "MH_S1"],
-        ["Camera Tầng 1", "cam_admin", "Cam@2026", "CAM_T1"]
-    ];
+        ["Title", "Username", "Password", "URL", "Notes", "SecretCode"],
+          ["Server Chính", "admin", "P@ssw0rd123!", "https://192.168.1.1", "Tủ rack tầng 1", "MH_S1"],
+          ["Camera Tầng 1", "cam_admin", "Cam@2026", "http://192.168.1.100", "Bên trái", "CAM_T1"]
+      ];
     const ws = xlsx.utils.aoa_to_sheet(ws_data);
     
     // Chỉnh độ rộng cột cho đẹp
-    ws['!cols'] = [{wch: 20}, {wch: 20}, {wch: 20}, {wch: 20}];
+    ws['!cols'] = [{wch: 20}, {wch: 20}, {wch: 20}, {wch: 25}, {wch: 25}, {wch: 15}];
     xlsx.utils.book_append_sheet(wb, ws, "Passwords");
     
     const buffer = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' });
@@ -408,20 +408,19 @@ app.post('/edit_password/:id', requireLogin, (req, res) => {
 });
 
 app.get('/secret', (req, res) => {
-    res.render('secret', { passwordData: null, error: null });
-});
-
-app.post('/secret', (req, res) => {
-    const { secret_code } = req.body;
-    if (!secret_code || secret_code.trim() === '') {
-        return res.render('secret', { passwordData: null, error: 'Vui lòng nhập mã bí mật!' });
+    const code = req.session.secret_code;
+    
+    if (!code) {
+        return res.render('secret', { passwordData: null, error: req.session.secret_error || null });
     }
     
-    db.all("SELECT * FROM passwords WHERE LOWER(TRIM(secret_code)) = LOWER(?)", [secret_code.trim()], (err, rows) => {
+    db.all("SELECT * FROM passwords WHERE LOWER(TRIM(secret_code)) = LOWER(?)", [code], (err, rows) => {
         if (err || !rows || rows.length === 0) {
+            req.session.secret_code = null;
             return res.render('secret', { passwordData: null, error: 'Mã bí mật không hợp lệ hoặc không tồn tại!' });
         }
         
+        req.session.secret_error = null;
         // Decrypt passwords
         rows.forEach(row => {
             let dec = '';
@@ -433,6 +432,23 @@ app.post('/secret', (req, res) => {
         
         res.render('secret', { passwordData: rows, error: null });
     });
+});
+
+app.post('/secret', (req, res) => {
+    const { secret_code } = req.body;
+    if (!secret_code || secret_code.trim() === '') {
+        req.session.secret_error = 'Vui lòng nhập mã bí mật!';
+        return res.redirect('/secret');
+    }
+    
+    req.session.secret_code = secret_code.trim();
+    res.redirect('/secret');
+});
+
+app.get('/clear_secret', (req, res) => {
+    req.session.secret_code = null;
+    req.session.secret_error = null;
+    res.redirect('/secret');
 });
 
 const PORT = process.env.PORT || config.PORT;
