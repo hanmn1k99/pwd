@@ -414,19 +414,21 @@ app.post('/secret', (req, res) => {
         return res.render('secret', { passwordData: null, error: 'Vui lòng nhập mã bí mật!' });
     }
     
-    db.get("SELECT * FROM passwords WHERE secret_code = ?", [secret_code.trim()], (err, row) => {
-        if (err || !row) {
+    db.all("SELECT * FROM passwords WHERE secret_code = ?", [secret_code.trim()], (err, rows) => {
+        if (err || !rows || rows.length === 0) {
             return res.render('secret', { passwordData: null, error: 'Mã bí mật không hợp lệ hoặc không tồn tại!' });
         }
         
-        // Decrypt password
-        let dec = '';
-        if (row.encrypted_password && row.iv) {
-            dec = decrypt(row.encrypted_password, row.iv);
-        }
-        row.decrypted = dec;
+        // Decrypt passwords
+        rows.forEach(row => {
+            let dec = '';
+            if (row.encrypted_password && row.iv) {
+                dec = decrypt(row.encrypted_password, row.iv);
+            }
+            row.decrypted = dec;
+        });
         
-        res.render('secret', { passwordData: row, error: null });
+        res.render('secret', { passwordData: rows, error: null });
     });
 });
 
