@@ -21,6 +21,37 @@ app.use(express.json());
 // Truyền config ra toàn bộ giao diện EJS
 app.use((req, res, next) => {
     res.locals.config = config;
+    res.locals.getIconForTitle = function(title) {
+        if (!title) return 'shield-checkmark';
+        const t = title.toLowerCase();
+        
+        if (t.includes('facebook') || t.match(/\bfb\b/)) return 'logo-facebook';
+        if (t.includes('google') || t.includes('gmail')) return 'logo-google';
+        if (t.includes('youtube') || t.match(/\byt\b/)) return 'logo-youtube';
+        if (t.includes('instagram') || t.match(/\big\b/)) return 'logo-instagram';
+        if (t.includes('tiktok')) return 'logo-tiktok';
+        if (t.includes('twitter') || t.match(/\bx\b/)) return 'logo-twitter';
+        if (t.includes('github') || t.includes('gitlab')) return 'logo-github';
+        if (t.includes('microsoft') || t.includes('windows') || t.includes('office')) return 'logo-windows';
+        if (t.includes('apple') || t.includes('icloud') || t.includes('mac')) return 'logo-apple';
+        if (t.includes('amazon') || t.includes('aws')) return 'logo-amazon';
+        if (t.includes('camera') || t.includes('cctv') || t.match(/\bcam\b/)) return 'videocam';
+        if (t.includes('server') || t.includes('vps') || t.includes('host') || t.includes('domain')) return 'server';
+        if (t.includes('wifi') || t.includes('router') || t.includes('modem') || t.includes('network')) return 'wifi';
+        if (t.includes('mail') || t.includes('email')) return 'mail';
+        if (t.includes('bank') || t.includes('ngân hàng') || t.includes('vcb') || t.includes('mbbank') || t.includes('bidv') || t.includes('techcom') || t.includes('vietcom') || t.includes('vietin') || t.includes('tpbank')) return 'card';
+        if (t.includes('shopee') || t.includes('lazada') || t.includes('tiki') || t.includes('shop')) return 'cart';
+        if (t.includes('zalo') || t.includes('chat') || t.includes('messenger')) return 'chatbubbles';
+        if (t.includes('discord')) return 'logo-discord';
+        if (t.includes('slack')) return 'logo-slack';
+        if (t.includes('figma')) return 'logo-figma';
+        if (t.includes('paypal')) return 'logo-paypal';
+        if (t.includes('steam')) return 'logo-steam';
+        if (t.includes('xbox')) return 'logo-xbox';
+        if (t.includes('playstation')) return 'logo-playstation';
+        
+        return 'shield-checkmark'; // Default
+    };
     if (!req.path.startsWith('/css') && !req.path.startsWith('/js')) {
         res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     }

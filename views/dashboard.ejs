@@ -99,7 +99,7 @@
                     <div class="card h-100 shadow-sm rounded-4">
                         <div class="card-body p-4">
                             <div class="d-flex justify-content-between align-items-start mb-3">
-                                <h5 class="card-title text-<%= config.THEME_COLOR %> fw-bold mb-0"><%= p.title %></h5>
+                                <h5 class="card-title text-<%= config.THEME_COLOR %> fw-bold mb-0"><ion-icon name="<%= getIconForTitle(p.title) %>" class="me-1 align-text-bottom"></ion-icon> <%= p.title %></h5>
                                 <div>
                                     <% if (user.is_admin) { %>
                                         <button class="btn btn-sm btn-outline-primary border-0" data-bs-toggle="modal" data-bs-target="#editPasswordModal-<%= p.id %>" title="Sửa"><ion-icon name="create" class="icon-only fs-5"></ion-icon></button>
@@ -212,7 +212,7 @@
                 <div class="card h-100 shadow-sm rounded-4 border border-secondary-subtle">
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h5 class="card-title text-<%= config.THEME_COLOR %> fw-bold mb-0"><%= p.title %></h5>
+                            <h5 class="card-title text-<%= config.THEME_COLOR %> fw-bold mb-0"><ion-icon name="<%= getIconForTitle(p.title) %>" class="me-1 align-text-bottom"></ion-icon> <%= p.title %></h5>
                             <div>
                                 <% if (user.is_admin) { %>
                                     <button class="btn btn-sm btn-outline-primary border-0" data-bs-toggle="modal" data-bs-target="#editPasswordModal-<%= p.id %>" title="Sửa"><ion-icon name="create" class="icon-only fs-5"></ion-icon></button>
