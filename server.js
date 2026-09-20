@@ -290,7 +290,7 @@ app.post('/bulk_upload_excel', requireLogin, upload.single('excelFile'), (req, r
                 const pwd = row['Password'] || '';
                 const url = row['URL'] || '';
                 const notes = row['Notes'] || '';
-                const secret = row['SecretCode'] || '';
+                const secret = (row['SecretCode'] || '').toString().trim();
                 
                 if (!secret.trim()) {
                     errors.push(`Dòng ${index + 2}: Thiếu Mã Chia Sẻ (SecretCode bắt buộc cho upload công khai)`);
@@ -384,7 +384,7 @@ app.post('/edit_password/:id', requireLogin, (req, res) => {
         if (!row || row.owner_id !== req.session.user.id) return res.status(403).send("Bạn không có quyền sửa mật khẩu này (Chỉ người tạo mới được sửa)!");
 
         db.run(`UPDATE passwords SET title=?, acc_username=?, url=?, notes=?, secret_code=? WHERE id=?`, 
-            [title, acc_username, url, notes, secret_code || '', req.params.id], (err) => {
+            [title, acc_username, url, notes, secret_code ? secret_code.trim() : '', req.params.id], (err) => {
             
             if (password && password.trim() !== '') {
             const enc = encrypt(password);
@@ -414,7 +414,7 @@ app.post('/secret', (req, res) => {
         return res.render('secret', { passwordData: null, error: 'Vui lòng nhập mã bí mật!' });
     }
     
-    db.all("SELECT * FROM passwords WHERE secret_code = ?", [secret_code.trim()], (err, rows) => {
+    db.all("SELECT * FROM passwords WHERE LOWER(TRIM(secret_code)) = LOWER(?)", [secret_code.trim()], (err, rows) => {
         if (err || !rows || rows.length === 0) {
             return res.render('secret', { passwordData: null, error: 'Mã bí mật không hợp lệ hoặc không tồn tại!' });
         }
