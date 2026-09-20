@@ -21,6 +21,9 @@ app.use(express.json());
 // Truyền config ra toàn bộ giao diện EJS
 app.use((req, res, next) => {
     res.locals.config = config;
+    if (!req.path.startsWith('/css') && !req.path.startsWith('/js')) {
+        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    }
     next();
 });
 
