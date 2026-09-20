@@ -206,45 +206,50 @@
         </div>
         <% } %>
         <% if (sharedPass.length > 0) { %>
-        <div class="table-responsive bg-body-tertiary rounded-4 border border-secondary-subtle shadow-sm mb-5">
-            <table class="table table-hover align-middle mb-0">
-                <thead>
-                    <tr>
-                        <th class="ps-4" style="width: 20%;">Mã Chia Sẻ</th>
-                        <th style="width: 25%;">Tiêu đề</th>
-                        <th style="width: 20%;">Tài khoản</th>
-                        <th style="width: 15%;">Mật khẩu</th>
-                        <th class="text-end pe-4" style="width: 20%;">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% sharedPass.forEach(p => { %>
-                    <tr>
-                        <td class="ps-4">
-                            <div class="d-inline-flex align-items-center">
-                                <span class="font-monospace text-body" id="secret-<%= p.id %>" style="font-size: 1.1em; letter-spacing: 2px; min-width: 90px; text-align: center; display: inline-block;">••••••••</span>
-                                <button class="btn btn-sm btn-link text-secondary p-0 ms-2" onclick="toggleSecret('<%= p.id %>', '<%= p.secret_code.replace(/'/g, "\\\\'") %>')" title="Xem/Ẩn Mã Bí Mật">
-                                    <ion-icon name="eye" id="icon-secret-<%= p.id %>" class="fs-6"></ion-icon>
-                                </button>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+            <% sharedPass.forEach(p => { %>
+            <div class="col" id="card-pwd-<%= p.id %>">
+                <div class="card h-100 shadow-sm rounded-4 border border-secondary-subtle">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="card-title text-<%= config.THEME_COLOR %> fw-bold mb-0"><%= p.title %></h5>
+                            <div>
+                                <% if (user.is_admin) { %>
+                                    <button class="btn btn-sm btn-outline-primary border-0" data-bs-toggle="modal" data-bs-target="#editPasswordModal-<%= p.id %>" title="Sửa"><ion-icon name="create" class="icon-only fs-5"></ion-icon></button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger border-0" title="Xóa" onclick="handleDeleteClick(this, '<%= p.id %>')"><ion-icon name="trash" class="icon-only fs-5"></ion-icon></button>
+                                <% } %>
                             </div>
-                        </td>
-                        <td class="fw-bold text-<%= config.THEME_COLOR %>"><%= p.title %></td>
-                        <td><!--email_off--><%= p.acc_username %><!--/email_off--></td>
-                        <td>
-                            <span class="font-monospace text-body" id="pw-shared-<%= p.id %>" style="letter-spacing: 2px; min-width: 90px; display: inline-block;">••••••••</span>
-                        </td>
-                        <td class="text-end pe-4">
-                            <button class="btn btn-sm btn-outline-secondary border-0" onclick="copyToClipboard('<%= p.secret_code %>')" title="Copy Mã Bí Mật"><ion-icon name="key" class="icon-only fs-6"></ion-icon></button>
-                            <button class="btn btn-sm btn-outline-secondary border-0" onclick="togglePasswordShared('<%= p.id %>', '<%= p.decrypted.replace(/'/g, "\\'") %>')" title="Xem mật khẩu"><ion-icon name="eye" id="icon-shared-<%= p.id %>" class="icon-only fs-6"></ion-icon></button>
-                            <% if (user.is_admin) { %>
-                            <button class="btn btn-sm btn-outline-primary border-0 ms-1" data-bs-toggle="modal" data-bs-target="#editPasswordModal-<%= p.id %>" title="Sửa"><ion-icon name="create" class="icon-only fs-6"></ion-icon></button>
-                            <button type="button" class="btn btn-sm btn-outline-danger border-0" title="Xóa" onclick="handleDeleteClick(this, '<%= p.id %>')"><ion-icon name="trash" class="icon-only fs-6"></ion-icon></button>
-                            <% } %>
-                        </td>
-                    </tr>
-                    <% }) %>
-                </tbody>
-            </table>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <small class="text-muted d-block text-uppercase fw-bold mb-2" style="font-size: 0.70em; letter-spacing: 1px;"><ion-icon name="person"></ion-icon> Tài khoản</small>
+                            <div class="d-flex align-items-center bg-body-tertiary p-2 rounded-3 border border-secondary-subtle">
+                                <span class="text-body fw-medium font-monospace flex-grow-1 ms-2" style="font-size: 0.95em;"><!--email_off--><%= p.acc_username %><!--/email_off--></span>
+                                <button class="btn btn-sm btn-outline-secondary border-0" onclick="copyToClipboard('<%= p.acc_username %>')" title="Copy"><ion-icon name="copy" class="icon-only"></ion-icon></button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-0">
+                            <small class="text-muted d-block text-uppercase fw-bold mb-2" style="font-size: 0.70em; letter-spacing: 1px;"><ion-icon name="lock-closed"></ion-icon> Mật khẩu</small>
+                            <div class="d-flex align-items-center bg-body-tertiary p-2 rounded-3 border border-secondary-subtle">
+                                <span class="text-body font-monospace flex-grow-1 ms-2" id="pw-shared-<%= p.id %>" style="font-size: 0.95em; letter-spacing: 2px;">••••••••</span>
+                                <button class="btn btn-sm btn-outline-secondary border-0 me-1" onclick="togglePasswordShared('<%= p.id %>', '<%= p.decrypted.replace(/'/g, "\'") %>')" title="Xem/Ẩn"><ion-icon name="eye" id="icon-shared-<%= p.id %>" class="icon-only"></ion-icon></button>
+                                <button class="btn btn-sm btn-outline-secondary border-0" onclick="copyToClipboard('<%= p.decrypted %>')" title="Copy"><ion-icon name="copy" class="icon-only"></ion-icon></button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer bg-body-tertiary border-top px-4 pt-3 pb-3 rounded-bottom-4 mt-auto">
+                        <small class="text-muted d-block text-uppercase fw-bold mb-2" style="font-size: 0.70em; letter-spacing: 1px;"><ion-icon name="key"></ion-icon> Mã Bí Mật</small>
+                        <div class="d-flex align-items-center bg-body p-2 rounded-3 border border-secondary-subtle shadow-sm">
+                            <span class="text-primary fw-bold font-monospace flex-grow-1 ms-2" id="secret-<%= p.id %>" style="font-size: 1.05em; letter-spacing: 2px;">••••••••</span>
+                            <button class="btn btn-sm btn-outline-secondary border-0 me-1" onclick="toggleSecret('<%= p.id %>', '<%= p.secret_code.replace(/'/g, "\'") %>')" title="Xem/Ẩn Mã"><ion-icon name="eye" id="icon-secret-<%= p.id %>" class="icon-only"></ion-icon></button>
+                            <button class="btn btn-sm btn-outline-primary border-0" onclick="copyToClipboard('<%= p.secret_code %>')" title="Copy Mã"><ion-icon name="copy" class="icon-only"></ion-icon></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% }) %>
         </div>
         <% } else { %>
             <div class="col-12">
@@ -599,7 +604,124 @@
 <script src="/js/main.js?v=<%= Date.now() %>"></script>
 
     
-    <!-- Đăng ký Service Worker cho PWA -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js');
+        });
+      }
+    </script>
+    <script>
+        function addLinkRow(id) {
+            const container = document.getElementById('link-container-' + id);
+            const html = `
+                <div class="input-group mb-2 link-row">
+                    <input type="text" class="form-control link-name" placeholder="Tên">
+                    <input type="text" class="form-control link-url" placeholder="Link">
+                    <button class="btn btn-outline-danger btn-remove-link" type="button" onclick="this.parentElement.remove()"><ion-icon name="trash" class="d-flex"></ion-icon></button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function compileUrl(id) {
+            const container = document.getElementById('link-container-' + id);
+            const protocol = document.querySelector(`input[name="protocol_${id}"]:checked`).value;
+            const rows = container.querySelectorAll('.link-row');
+            let compiled = [];
+            
+            rows.forEach(row => {
+                let name = row.querySelector('.link-name').value.trim();
+                let url = row.querySelector('.link-url').value.trim();
+                
+                if (url !== '') {
+                    // Nếu người dùng đã tự gõ http/https thì tôn trọng, không thì tự gắn
+                    let fullUrl = (url.startsWith('http://') || url.startsWith('https://')) ? url : protocol + url;
+                    
+                    if (name !== '') {
+                        compiled.push(`${name} | ${fullUrl}`);
+                    } else {
+                        compiled.push(`${fullUrl}`);
+                    }
+                }
+            });
+            
+            document.getElementById('final_url_' + id).value = compiled.join(', ');
+        }
+
+        function processExcel() {
+            const fileInput = document.getElementById('excelFileInput');
+            const progress = document.getElementById('uploadProgress');
+            const bar = document.getElementById('uploadProgressBar');
+            const status = document.getElementById('uploadStatusText');
+            
+            if (!fileInput.files.length) {
+                progress.classList.remove('d-none');
+                bar.style.width = '100%';
+                if (bar.classList.contains('bg-<%= config.THEME_COLOR %>')) bar.classList.replace('bg-<%= config.THEME_COLOR %>', 'bg-danger');
+                if (bar.classList.contains('bg-success')) bar.classList.replace('bg-success', 'bg-danger');
+                status.innerText = 'Vui lòng chọn một file Excel (.xlsx) trước!';
+                return;
+            }
+            
+            progress.classList.remove('d-none');
+            if (bar.classList.contains('bg-danger')) bar.classList.replace('bg-danger', 'bg-<%= config.THEME_COLOR %>');
+            if (bar.classList.contains('bg-success')) bar.classList.replace('bg-success', 'bg-<%= config.THEME_COLOR %>');
+            
+            progress.classList.remove('d-none');
+            bar.style.width = '30%';
+            status.innerText = 'Đang đẩy file lên Server...';
+            
+            const formData = new FormData();
+            formData.append('excelFile', fileInput.files[0]);
+            
+            fetch('/bulk_upload_excel', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                bar.style.width = '100%';
+                bar.classList.replace('bg-<%= config.THEME_COLOR %>', 'bg-success');
+                if (data.success) {
+                    status.innerText = `Thành công: Đã nhập ${data.count} tài khoản! Đang cập nhật...`;
+                    fetch(window.location.href)
+                        .then(r => r.text())
+                        .then(newHtml => {
+                            const doc = new DOMParser().parseFromString(newHtml, 'text/html');
+                            document.querySelector('#shared-tab-pane').innerHTML = doc.querySelector('#shared-tab-pane').innerHTML;
+                            document.querySelector('#internal-tab-pane').innerHTML = doc.querySelector('#internal-tab-pane').innerHTML;
+                            document.querySelector('#passwordTabs').innerHTML = doc.querySelector('#passwordTabs').innerHTML;
+                            
+                            setTimeout(() => {
+                                const modal = bootstrap.Modal.getInstance(document.getElementById('uploadCsvModal'));
+                                if(modal) modal.hide();
+                                progress.classList.add('d-none');
+                                fileInput.value = '';
+                                
+                                // Rebind tab events for newly replaced tabs
+                                let tabButtons = document.querySelectorAll('button[data-bs-toggle="pill"]');
+                                tabButtons.forEach(btn => {
+                                    btn.addEventListener('shown.bs.tab', function(e) {
+                                        localStorage.setItem('activeTab', e.target.getAttribute('data-bs-target'));
+                                    });
+                                });
+                            }, 1000);
+                        });
+                } else {
+                    status.innerText = `Lỗi: ${data.error}`;
+                    bar.classList.replace('bg-success', 'bg-danger');
+                }
+            })
+            .catch(err => {
+                status.innerText = 'Lỗi kết nối!';
+                bar.classList.replace('bg-<%= config.THEME_COLOR %>', 'bg-danger');
+            });
+        }
+    
+    </script>
+
+      <!-- Đăng ký Service Worker cho PWA -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
